@@ -25,7 +25,7 @@ npm install @agentxv2/mcp
 import { McpClient } from '@agentxv2/mcp'
 
 const mcp = new McpClient({
-  gatewayUrl: 'http://REDACTED_HOST:3090',  // AgentX Gateway
+  gatewayUrl: 'https://agentx.0xainet.top',  // AgentX Gateway
   defaultChain: 'oxachain',                 // 默认链（对齐服务端默认 'sepolia'）
 })
 
