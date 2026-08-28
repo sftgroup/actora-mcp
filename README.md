@@ -87,7 +87,7 @@ const mcp = new McpClient({
 | `subscriptionDetail(id)` / `mySubscriptions(addr)` | `agentx_subscription_detail/my_list` | 订阅详情/列表 |
 | `platformFee(chain?)` | `agentx_subscription_fee` | 平台费率（bps） |
 | `gatewayHealth()` / `gatewayTenant()` | `agentx_gateway_health/tenant` | Gateway 状态 |
-| 对话/任务（`callTool`） | `agentx_gateway_chat` / `..._create_session` / `..._create_task` / `..._get_task` / `..._list_tasks` / `..._cancel_task` | 单轮对话与并行任务管理（需 `api_key`/`access_token` 参数） |
+| 对话/任务（`callTool`） | `agentx_gateway_chat` / `..._create_session` / `..._create_task` / `..._get_task` / `..._list_tasks` / `..._cancel_task` | 单轮对话与并行任务管理（需 `access_token` JWT 参数） |
 
 ## 关键约定
 
