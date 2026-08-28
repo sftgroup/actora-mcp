@@ -134,7 +134,7 @@ interface TenantResult {
 }
 
 interface McpClientConfig {
-    /** AgentX Gateway base URL, e.g. http://REDACTED_HOST:3090 */
+    /** AgentX Gateway base URL, e.g. https://agentx.0xainet.top */
     gatewayUrl: string;
     /** Chain used by default when a tool call omits `chain`. Aligns with the server default ('sepolia'). */
     defaultChain?: McpChain;
