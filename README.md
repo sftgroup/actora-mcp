@@ -1,11 +1,12 @@
 # @agentxv2/mcp
 
-**AgentX MCP 客户端包** — 类型化访问 AgentX Gateway 的 MCP 服务（38 个工具）：IdentityRegistry 读取、订阅套餐/操作、A2A、信誉、配置、端点、**对话与并行任务管理**。
+**AgentX MCP 客户端包** — 类型化访问 AgentX Gateway 的 MCP 服务（40 个工具）：IdentityRegistry 读取、订阅套餐/操作、**中心化 Agent（C-6，链下市场）**、A2A、信誉、配置、端点、**对话与并行任务管理**。
 
 ```
 第三方服务 ── @agentxv2/mcp ──► POST <GATEWAY>/mcp (MCP JSON-RPC 2.0)
                                  ├─ agentx_identity_*     链上 Agent 读取
                                  ├─ agentx_subscription_* 订阅套餐 / 写操作描述
+                                 ├─ agentx_central_*      中心化 Agent（链下，负 ID）：列表 / 订阅状态
                                  ├─ agentx_a2a_* / reputation / config / endpoint
                                  ├─ agentx_gateway_health / tenant
                                  └─ agentx_gateway_chat / create_session / create_task / get_task / list_tasks / cancel_task
@@ -34,7 +35,7 @@ const info = await mcp.initialize()
 console.log('server:', info)                // { name, version }
 
 const tools = await mcp.listTools()
-console.log('工具数:', tools.length)         // 38
+console.log('工具数:', tools.length)         // 40
 
 // 批量查询 Agent（等价 SDK getAllAgents）
 const { agents, total } = await mcp.listAgents({ fromId: 1, toId: total, activeOnly: true })
@@ -83,7 +84,9 @@ const mcp = new McpClient({
 | `createPlan({agentId,price,period,...})` | `agentx_subscription_create_plan` | 创建套餐（WRITE） |
 | `subscribe(planId, {valueWei})` | `agentx_subscription_subscribe` | 订阅（WRITE） |
 | `cancelSubscription(id)` / `releaseFunds(id)` | `agentx_subscription_cancel/release` | 取消/释放（WRITE） |
-| `checkSubscription(sub, agentId)` | `agentx_subscription_check` | 订阅有效性 |
+| `checkSubscription(sub, agentId)` | `agentx_subscription_check` | 订阅有效性（链上） |
+| `centralAgents({activeOnly,category,capabilities,page,pageSize})` | `agentx_central_agent_list` | 中心化 Agent 列表 + 计划（链下，C-6） |
+| `centralSubscriptionCheck(sub, agentId)` | `agentx_central_subscription_check` | 中心化 Agent 订阅有效性（resolveAccess 链下优先） |
 | `subscriptionDetail(id)` / `mySubscriptions(addr)` | `agentx_subscription_detail/my_list` | 订阅详情/列表 |
 | `platformFee(chain?)` | `agentx_subscription_fee` | 平台费率（bps） |
 | `gatewayHealth()` / `gatewayTenant()` | `agentx_gateway_health/tenant` | Gateway 状态 |

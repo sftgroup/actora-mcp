@@ -122,6 +122,42 @@ interface WriteOpResult {
     chainId: number;
     args?: Record<string, unknown>;
 }
+/** Subscription plan of a centralized agent (same shape as on-chain plans). */
+interface CentralPlanResult {
+    planId: number;
+    /** wei, decimal string. */
+    price: string;
+    period: string;
+    payToken: string;
+    isActive: boolean;
+    trialDays: number;
+    creator: string | null;
+}
+interface CentralAgentResult {
+    id: number;
+    owner: string;
+    name: string;
+    description: string;
+    tags: string[];
+    capabilities: string[];
+    skills: string[];
+    category: string;
+    isActive: boolean;
+    source: 'central';
+    createdAt: string;
+    subscriptionPlans: CentralPlanResult[];
+}
+interface CentralAgentsResult {
+    agents: CentralAgentResult[];
+    total: number;
+    page: number;
+    pageSize: number;
+}
+interface CentralSubscriptionCheckResult {
+    active: boolean;
+    subscriber: string;
+    agentId: number;
+}
 interface GatewayHealthResult {
     status: string;
     services?: Record<string, unknown>;
@@ -147,9 +183,10 @@ interface McpClientConfig {
  * Typed MCP client for the AgentX Gateway MCP server.
  *
  * Connects to `<gatewayUrl>/mcp` over standard MCP JSON-RPC 2.0 and exposes
- * the 32 AgentX tools — with typed convenience methods for the IdentityRegistry
- * and SubscriptionManager groups. All WRITE tools return a `WriteOpResult`
- * descriptor; the actual transaction must be signed/submitted with a wallet.
+ * the AgentX tools — with typed convenience methods for the IdentityRegistry,
+ * SubscriptionManager and centralized-agent (C-6) groups. All WRITE tools return
+ * a `WriteOpResult` descriptor; the actual transaction must be signed/submitted
+ * with a wallet.
  */
 declare class McpClient {
     private readonly url;
@@ -217,6 +254,24 @@ declare class McpClient {
     gatewayHealth(): Promise<GatewayHealthResult>;
     /** `agentx_gateway_tenant` — current tenant info (needs `X-Api-Key` header). */
     gatewayTenant(): Promise<TenantResult>;
+    /**
+     * `agentx_central_agent_list` — centralized agents (source="central", negative
+     * IDs, NOT on-chain NFTs) with their subscription plans (central_plans, same
+     * structure as on-chain plans). Public read.
+     */
+    centralAgents(opts?: {
+        activeOnly?: boolean;
+        category?: string;
+        capabilities?: string;
+        page?: number;
+        pageSize?: number;
+    }): Promise<CentralAgentsResult>;
+    /**
+     * `agentx_central_subscription_check` — whether a wallet has an active
+     * subscription for a centralized agent (negative agentId). Resolves off-chain
+     * fiat/x402 records first (resolveAccess). Public read.
+     */
+    centralSubscriptionCheck(subscriber: string, agentId: number): Promise<CentralSubscriptionCheckResult>;
 }
 
-export { type AgentExistsResult, type AgentMetadata, type AgentMetadataResult, type AgentSummary, type CheckSubscriptionResult, type FeeResult, type GatewayHealthResult, type ListAgentsResult, type McpChain, McpClient, type McpClientConfig, type McpServerInfo, type McpToolSchema, type MySubscriptionsResult, type OwnerAgentsResult, type PlanResult, type SubscriptionDetailResult, type TenantResult, type TotalAgentsResult, type WriteOpResult };
+export { type AgentExistsResult, type AgentMetadata, type AgentMetadataResult, type AgentSummary, type CentralAgentResult, type CentralAgentsResult, type CentralPlanResult, type CentralSubscriptionCheckResult, type CheckSubscriptionResult, type FeeResult, type GatewayHealthResult, type ListAgentsResult, type McpChain, McpClient, type McpClientConfig, type McpServerInfo, type McpToolSchema, type MySubscriptionsResult, type OwnerAgentsResult, type PlanResult, type SubscriptionDetailResult, type TenantResult, type TotalAgentsResult, type WriteOpResult };

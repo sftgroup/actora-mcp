@@ -149,6 +149,29 @@ var McpClient = class _McpClient {
   gatewayTenant() {
     return this.callTool("agentx_gateway_tenant", {});
   }
+  // ── Centralized agents (C-6, off-chain) ──────────────────────────────────
+  /**
+   * `agentx_central_agent_list` — centralized agents (source="central", negative
+   * IDs, NOT on-chain NFTs) with their subscription plans (central_plans, same
+   * structure as on-chain plans). Public read.
+   */
+  centralAgents(opts = {}) {
+    return this.callTool("agentx_central_agent_list", {
+      ...opts.activeOnly !== void 0 && { activeOnly: opts.activeOnly },
+      ...opts.category !== void 0 && { category: opts.category },
+      ...opts.capabilities !== void 0 && { capabilities: opts.capabilities },
+      ...opts.page !== void 0 && { page: opts.page },
+      ...opts.pageSize !== void 0 && { pageSize: opts.pageSize }
+    });
+  }
+  /**
+   * `agentx_central_subscription_check` — whether a wallet has an active
+   * subscription for a centralized agent (negative agentId). Resolves off-chain
+   * fiat/x402 records first (resolveAccess). Public read.
+   */
+  centralSubscriptionCheck(subscriber, agentId) {
+    return this.callTool("agentx_central_subscription_check", { subscriber, agentId });
+  }
 };
 export {
   McpClient

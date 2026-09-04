@@ -139,6 +139,48 @@ export interface WriteOpResult {
   args?: Record<string, unknown>
 }
 
+// ── Centralized agents (C-6, off-chain) ────────────────────────────────────
+
+/** Subscription plan of a centralized agent (same shape as on-chain plans). */
+export interface CentralPlanResult {
+  planId: number
+  /** wei, decimal string. */
+  price: string
+  period: string
+  payToken: string
+  isActive: boolean
+  trialDays: number
+  creator: string | null
+}
+
+export interface CentralAgentResult {
+  id: number
+  owner: string
+  name: string
+  description: string
+  tags: string[]
+  capabilities: string[]
+  skills: string[]
+  category: string
+  isActive: boolean
+  source: 'central'
+  createdAt: string
+  subscriptionPlans: CentralPlanResult[]
+}
+
+export interface CentralAgentsResult {
+  agents: CentralAgentResult[]
+  total: number
+  page: number
+  pageSize: number
+}
+
+export interface CentralSubscriptionCheckResult {
+  active: boolean
+  subscriber: string
+  agentId: number
+}
+
 // ── Generic ─────────────────────────────────────────────────────────────────
 
 export interface GatewayHealthResult {

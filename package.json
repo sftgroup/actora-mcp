@@ -1,7 +1,7 @@
 {
   "name": "@agentxv2/mcp",
-  "version": "0.1.2",
-  "description": "AgentX MCP client — typed access to the AgentX Gateway MCP server (38 tools): IdentityRegistry reads, subscription plans/actions, A2A, reputation, config, endpoints, dialogue & parallel task management.",
+  "version": "0.1.3",
+  "description": "AgentX MCP client — typed access to the AgentX Gateway MCP server (40 tools): IdentityRegistry reads, subscription plans/actions, centralized agents (C-6, off-chain), A2A, reputation, config, endpoints, dialogue & parallel task management.",
   "keywords": ["agentx", "mcp", "ai-agent", "blockchain", "web3", "identity-registry"],
   "license": "MIT",
   "type": "module",

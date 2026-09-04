@@ -1,8 +1,8 @@
 import type {
-  AgentExistsResult, AgentMetadataResult, CheckSubscriptionResult, FeeResult,
-  GatewayHealthResult, ListAgentsResult, McpChain, McpServerInfo, McpToolSchema,
-  MySubscriptionsResult, OwnerAgentsResult, PlanResult, SubscriptionDetailResult,
-  TenantResult, TotalAgentsResult, WriteOpResult,
+  AgentExistsResult, AgentMetadataResult, CentralAgentsResult, CentralSubscriptionCheckResult,
+  CheckSubscriptionResult, FeeResult, GatewayHealthResult, ListAgentsResult, McpChain,
+  McpServerInfo, McpToolSchema, MySubscriptionsResult, OwnerAgentsResult, PlanResult,
+  SubscriptionDetailResult, TenantResult, TotalAgentsResult, WriteOpResult,
 } from './types'
 
 export interface McpClientConfig {
@@ -39,9 +39,10 @@ export interface McpResultEnvelope {
  * Typed MCP client for the AgentX Gateway MCP server.
  *
  * Connects to `<gatewayUrl>/mcp` over standard MCP JSON-RPC 2.0 and exposes
- * the 32 AgentX tools — with typed convenience methods for the IdentityRegistry
- * and SubscriptionManager groups. All WRITE tools return a `WriteOpResult`
- * descriptor; the actual transaction must be signed/submitted with a wallet.
+ * the AgentX tools — with typed convenience methods for the IdentityRegistry,
+ * SubscriptionManager and centralized-agent (C-6) groups. All WRITE tools return
+ * a `WriteOpResult` descriptor; the actual transaction must be signed/submitted
+ * with a wallet.
  */
 export class McpClient {
   private readonly url: string
@@ -231,5 +232,34 @@ export class McpClient {
   /** `agentx_gateway_tenant` — current tenant info (needs `X-Api-Key` header). */
   gatewayTenant(): Promise<TenantResult> {
     return this.callTool('agentx_gateway_tenant', {})
+  }
+
+  // ── Centralized agents (C-6, off-chain) ──────────────────────────────────
+
+  /**
+   * `agentx_central_agent_list` — centralized agents (source="central", negative
+   * IDs, NOT on-chain NFTs) with their subscription plans (central_plans, same
+   * structure as on-chain plans). Public read.
+   */
+  centralAgents(opts: {
+    activeOnly?: boolean; category?: string; capabilities?: string;
+    page?: number; pageSize?: number
+  } = {}): Promise<CentralAgentsResult> {
+    return this.callTool('agentx_central_agent_list', {
+      ...(opts.activeOnly !== undefined && { activeOnly: opts.activeOnly }),
+      ...(opts.category !== undefined && { category: opts.category }),
+      ...(opts.capabilities !== undefined && { capabilities: opts.capabilities }),
+      ...(opts.page !== undefined && { page: opts.page }),
+      ...(opts.pageSize !== undefined && { pageSize: opts.pageSize }),
+    })
+  }
+
+  /**
+   * `agentx_central_subscription_check` — whether a wallet has an active
+   * subscription for a centralized agent (negative agentId). Resolves off-chain
+   * fiat/x402 records first (resolveAccess). Public read.
+   */
+  centralSubscriptionCheck(subscriber: string, agentId: number): Promise<CentralSubscriptionCheckResult> {
+    return this.callTool('agentx_central_subscription_check', { subscriber, agentId })
   }
 }
