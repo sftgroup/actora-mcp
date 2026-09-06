@@ -1,8 +1,8 @@
 {
-  "name": "@agentxv2/mcp",
+  "name": "@actora/mcp",
   "version": "0.1.3",
-  "description": "AgentX MCP client — typed access to the AgentX Gateway MCP server (40 tools): IdentityRegistry reads, subscription plans/actions, centralized agents (C-6, off-chain), A2A, reputation, config, endpoints, dialogue & parallel task management.",
-  "keywords": ["agentx", "mcp", "ai-agent", "blockchain", "web3", "identity-registry"],
+  "description": "Actora MCP client — typed access to the Actora Gateway MCP server (40 tools): IdentityRegistry reads, subscription plans/actions, centralized agents (C-6, off-chain), A2A, reputation, config, endpoints, dialogue & parallel task management.",
+  "keywords": ["actora", "mcp", "ai-agent", "blockchain", "web3", "identity-registry"],
   "license": "MIT",
   "type": "module",
   "main": "./dist/index.cjs",

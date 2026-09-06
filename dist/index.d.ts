@@ -1,4 +1,4 @@
-/** Chain selector accepted by every AgentX MCP tool. */
+/** Chain selector accepted by every Actora MCP tool. */
 type McpChain = 'sepolia' | 'oxachain';
 /** A tool schema as returned by `tools/list`. */
 interface McpToolSchema {
@@ -170,7 +170,7 @@ interface TenantResult {
 }
 
 interface McpClientConfig {
-    /** AgentX Gateway base URL, e.g. https://agentx.0xainet.top */
+    /** Actora Gateway base URL, e.g. https://actora.codes */
     gatewayUrl: string;
     /** Chain used by default when a tool call omits `chain`. Aligns with the server default ('sepolia'). */
     defaultChain?: McpChain;
@@ -180,10 +180,10 @@ interface McpClientConfig {
     timeoutMs?: number;
 }
 /**
- * Typed MCP client for the AgentX Gateway MCP server.
+ * Typed MCP client for the Actora Gateway MCP server.
  *
  * Connects to `<gatewayUrl>/mcp` over standard MCP JSON-RPC 2.0 and exposes
- * the AgentX tools — with typed convenience methods for the IdentityRegistry,
+ * the Actora tools — with typed convenience methods for the IdentityRegistry,
  * SubscriptionManager and centralized-agent (C-6) groups. All WRITE tools return
  * a `WriteOpResult` descriptor; the actual transaction must be signed/submitted
  * with a wallet.
@@ -206,7 +206,7 @@ declare class McpClient {
     listTools(): Promise<McpToolSchema[]>;
     /** `tools/call` — invoke any tool and return the parsed result. */
     callTool<T = unknown>(name: string, args?: Record<string, unknown>): Promise<T>;
-    /** `agentx_identity_list_all` — batch query with filters (same as SDK `getAllAgents`). */
+    /** `actora_identity_list_all` — batch query with filters (same as SDK `getAllAgents`). */
     listAgents(opts?: {
         chain?: McpChain;
         fromId?: number;
@@ -214,17 +214,17 @@ declare class McpClient {
         activeOnly?: boolean;
         capabilities?: string;
     }): Promise<ListAgentsResult>;
-    /** `agentx_identity_metadata` — structured metadata for one agent. */
+    /** `actora_identity_metadata` — structured metadata for one agent. */
     getAgentMetadata(agentId: number, chain?: McpChain): Promise<AgentMetadataResult>;
-    /** `agentx_identity_total_count` — total registered agents. */
+    /** `actora_identity_total_count` — total registered agents. */
     totalAgents(chain?: McpChain): Promise<TotalAgentsResult>;
-    /** `agentx_identity_exists` — on-chain existence check. */
+    /** `actora_identity_exists` — on-chain existence check. */
     agentExists(agentId: number, chain?: McpChain): Promise<AgentExistsResult>;
-    /** `agentx_identity_list` — agent IDs owned by a wallet. */
+    /** `actora_identity_list` — agent IDs owned by a wallet. */
     agentsOfOwner(ownerAddress: string, chain?: McpChain): Promise<OwnerAgentsResult>;
-    /** `agentx_subscription_plans` — single plan details (price is a decimal wei string). */
+    /** `actora_subscription_plans` — single plan details (price is a decimal wei string). */
     getPlan(planId: number, chain?: McpChain): Promise<PlanResult>;
-    /** `agentx_subscription_create_plan` — WRITE descriptor (sign & submit with a wallet). */
+    /** `actora_subscription_create_plan` — WRITE descriptor (sign & submit with a wallet). */
     createPlan(args: {
         agentId: number;
         price: string;
@@ -233,29 +233,29 @@ declare class McpClient {
         trialDays?: number;
         chain?: McpChain;
     }): Promise<WriteOpResult>;
-    /** `agentx_subscription_check` — active subscription for (wallet, agent). */
+    /** `actora_subscription_check` — active subscription for (wallet, agent). */
     checkSubscription(subscriberAddress: string, agentId: number, chain?: McpChain): Promise<CheckSubscriptionResult>;
-    /** `agentx_subscription_detail` — full subscription detail. */
+    /** `actora_subscription_detail` — full subscription detail. */
     subscriptionDetail(subscriptionId: number, chain?: McpChain): Promise<SubscriptionDetailResult>;
-    /** `agentx_subscription_my_list` — all subscription IDs of a wallet. */
+    /** `actora_subscription_my_list` — all subscription IDs of a wallet. */
     mySubscriptions(userAddress: string, chain?: McpChain): Promise<MySubscriptionsResult>;
-    /** `agentx_subscription_subscribe` — WRITE descriptor. */
+    /** `actora_subscription_subscribe` — WRITE descriptor. */
     subscribe(planId: number, opts?: {
         valueWei?: string;
         chain?: McpChain;
     }): Promise<WriteOpResult>;
-    /** `agentx_subscription_cancel` — WRITE descriptor. */
+    /** `actora_subscription_cancel` — WRITE descriptor. */
     cancelSubscription(subscriptionId: number, chain?: McpChain): Promise<WriteOpResult>;
-    /** `agentx_subscription_release` — WRITE descriptor (release escrowed funds). */
+    /** `actora_subscription_release` — WRITE descriptor (release escrowed funds). */
     releaseFunds(subscriptionId: number, chain?: McpChain): Promise<WriteOpResult>;
-    /** `agentx_subscription_fee` — current platform fee in basis points. */
+    /** `actora_subscription_fee` — current platform fee in basis points. */
     platformFee(chain?: McpChain): Promise<FeeResult>;
-    /** `agentx_gateway_health` — gateway health + indexer status. */
+    /** `actora_gateway_health` — gateway health + indexer status. */
     gatewayHealth(): Promise<GatewayHealthResult>;
-    /** `agentx_gateway_tenant` — current tenant info (needs `X-Api-Key` header). */
+    /** `actora_gateway_tenant` — current tenant info (needs `X-Api-Key` header). */
     gatewayTenant(): Promise<TenantResult>;
     /**
-     * `agentx_central_agent_list` — centralized agents (source="central", negative
+     * `actora_central_agent_list` — centralized agents (source="central", negative
      * IDs, NOT on-chain NFTs) with their subscription plans (central_plans, same
      * structure as on-chain plans). Public read.
      */
@@ -267,7 +267,7 @@ declare class McpClient {
         pageSize?: number;
     }): Promise<CentralAgentsResult>;
     /**
-     * `agentx_central_subscription_check` — whether a wallet has an active
+     * `actora_central_subscription_check` — whether a wallet has an active
      * subscription for a centralized agent (negative agentId). Resolves off-chain
      * fiat/x402 records first (resolveAccess). Public read.
      */

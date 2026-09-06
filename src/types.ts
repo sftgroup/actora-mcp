@@ -1,4 +1,4 @@
-/** Chain selector accepted by every AgentX MCP tool. */
+/** Chain selector accepted by every Actora MCP tool. */
 export type McpChain = 'sepolia' | 'oxachain'
 
 /** A tool schema as returned by `tools/list`. */
@@ -19,7 +19,7 @@ export interface McpServerInfo {
   [key: string]: unknown
 }
 
-// ── Agent summaries (agentx_identity_list_all) ─────────────────────────────
+// ── Agent summaries (actora_identity_list_all) ─────────────────────────────
 
 export interface AgentMetadata {
   name: string
@@ -76,7 +76,7 @@ export interface OwnerAgentsResult {
   chainId: number
 }
 
-// ── Subscription (agentx_subscription_*) ────────────────────────────────────
+// ── Subscription (actora_subscription_*) ────────────────────────────────────
 
 export interface PlanResult {
   planId: number

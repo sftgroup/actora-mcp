@@ -75,7 +75,7 @@ var McpClient = class _McpClient {
     const result = await this.rpc("initialize", {
       protocolVersion: "2024-11-05",
       capabilities: {},
-      clientInfo: { name: "@agentxv2/mcp", version: "0.1.0" }
+      clientInfo: { name: "@actora/mcp", version: "0.1.0" }
     });
     this.serverInfo = result.serverInfo ?? {};
     return this.serverInfo;
@@ -92,9 +92,9 @@ var McpClient = class _McpClient {
     return _McpClient.parseToolResult(result);
   }
   // ── IdentityRegistry ─────────────────────────────────────────────────────
-  /** `agentx_identity_list_all` — batch query with filters (same as SDK `getAllAgents`). */
+  /** `actora_identity_list_all` — batch query with filters (same as SDK `getAllAgents`). */
   listAgents(opts = {}) {
-    return this.callTool("agentx_identity_list_all", {
+    return this.callTool("actora_identity_list_all", {
       chain: opts.chain ?? this.defaultChain,
       ...opts.fromId !== void 0 && { fromId: opts.fromId },
       ...opts.toId !== void 0 && { toId: opts.toId },
@@ -102,30 +102,30 @@ var McpClient = class _McpClient {
       ...opts.capabilities !== void 0 && { capabilities: opts.capabilities }
     });
   }
-  /** `agentx_identity_metadata` — structured metadata for one agent. */
+  /** `actora_identity_metadata` — structured metadata for one agent. */
   getAgentMetadata(agentId, chain) {
-    return this.callTool("agentx_identity_metadata", { chain: chain ?? this.defaultChain, agentId });
+    return this.callTool("actora_identity_metadata", { chain: chain ?? this.defaultChain, agentId });
   }
-  /** `agentx_identity_total_count` — total registered agents. */
+  /** `actora_identity_total_count` — total registered agents. */
   totalAgents(chain) {
-    return this.callTool("agentx_identity_total_count", { chain: chain ?? this.defaultChain });
+    return this.callTool("actora_identity_total_count", { chain: chain ?? this.defaultChain });
   }
-  /** `agentx_identity_exists` — on-chain existence check. */
+  /** `actora_identity_exists` — on-chain existence check. */
   agentExists(agentId, chain) {
-    return this.callTool("agentx_identity_exists", { chain: chain ?? this.defaultChain, agentId });
+    return this.callTool("actora_identity_exists", { chain: chain ?? this.defaultChain, agentId });
   }
-  /** `agentx_identity_list` — agent IDs owned by a wallet. */
+  /** `actora_identity_list` — agent IDs owned by a wallet. */
   agentsOfOwner(ownerAddress, chain) {
-    return this.callTool("agentx_identity_list", { chain: chain ?? this.defaultChain, ownerAddress });
+    return this.callTool("actora_identity_list", { chain: chain ?? this.defaultChain, ownerAddress });
   }
   // ── SubscriptionManager ──────────────────────────────────────────────────
-  /** `agentx_subscription_plans` — single plan details (price is a decimal wei string). */
+  /** `actora_subscription_plans` — single plan details (price is a decimal wei string). */
   getPlan(planId, chain) {
-    return this.callTool("agentx_subscription_plans", { chain: chain ?? this.defaultChain, planId });
+    return this.callTool("actora_subscription_plans", { chain: chain ?? this.defaultChain, planId });
   }
-  /** `agentx_subscription_create_plan` — WRITE descriptor (sign & submit with a wallet). */
+  /** `actora_subscription_create_plan` — WRITE descriptor (sign & submit with a wallet). */
   createPlan(args) {
-    return this.callTool("agentx_subscription_create_plan", {
+    return this.callTool("actora_subscription_create_plan", {
       chain: args.chain ?? this.defaultChain,
       agentId: args.agentId,
       price: args.price,
@@ -134,55 +134,55 @@ var McpClient = class _McpClient {
       ...args.trialDays !== void 0 && { trialDays: args.trialDays }
     });
   }
-  /** `agentx_subscription_check` — active subscription for (wallet, agent). */
+  /** `actora_subscription_check` — active subscription for (wallet, agent). */
   checkSubscription(subscriberAddress, agentId, chain) {
-    return this.callTool("agentx_subscription_check", { chain: chain ?? this.defaultChain, subscriberAddress, agentId });
+    return this.callTool("actora_subscription_check", { chain: chain ?? this.defaultChain, subscriberAddress, agentId });
   }
-  /** `agentx_subscription_detail` — full subscription detail. */
+  /** `actora_subscription_detail` — full subscription detail. */
   subscriptionDetail(subscriptionId, chain) {
-    return this.callTool("agentx_subscription_detail", { chain: chain ?? this.defaultChain, subscriptionId });
+    return this.callTool("actora_subscription_detail", { chain: chain ?? this.defaultChain, subscriptionId });
   }
-  /** `agentx_subscription_my_list` — all subscription IDs of a wallet. */
+  /** `actora_subscription_my_list` — all subscription IDs of a wallet. */
   mySubscriptions(userAddress, chain) {
-    return this.callTool("agentx_subscription_my_list", { chain: chain ?? this.defaultChain, userAddress });
+    return this.callTool("actora_subscription_my_list", { chain: chain ?? this.defaultChain, userAddress });
   }
-  /** `agentx_subscription_subscribe` — WRITE descriptor. */
+  /** `actora_subscription_subscribe` — WRITE descriptor. */
   subscribe(planId, opts = {}) {
-    return this.callTool("agentx_subscription_subscribe", {
+    return this.callTool("actora_subscription_subscribe", {
       chain: opts.chain ?? this.defaultChain,
       planId,
       ...opts.valueWei !== void 0 && { valueWei: opts.valueWei }
     });
   }
-  /** `agentx_subscription_cancel` — WRITE descriptor. */
+  /** `actora_subscription_cancel` — WRITE descriptor. */
   cancelSubscription(subscriptionId, chain) {
-    return this.callTool("agentx_subscription_cancel", { chain: chain ?? this.defaultChain, subscriptionId });
+    return this.callTool("actora_subscription_cancel", { chain: chain ?? this.defaultChain, subscriptionId });
   }
-  /** `agentx_subscription_release` — WRITE descriptor (release escrowed funds). */
+  /** `actora_subscription_release` — WRITE descriptor (release escrowed funds). */
   releaseFunds(subscriptionId, chain) {
-    return this.callTool("agentx_subscription_release", { chain: chain ?? this.defaultChain, subscriptionId });
+    return this.callTool("actora_subscription_release", { chain: chain ?? this.defaultChain, subscriptionId });
   }
-  /** `agentx_subscription_fee` — current platform fee in basis points. */
+  /** `actora_subscription_fee` — current platform fee in basis points. */
   platformFee(chain) {
-    return this.callTool("agentx_subscription_fee", { chain: chain ?? this.defaultChain });
+    return this.callTool("actora_subscription_fee", { chain: chain ?? this.defaultChain });
   }
   // ── Gateway ──────────────────────────────────────────────────────────────
-  /** `agentx_gateway_health` — gateway health + indexer status. */
+  /** `actora_gateway_health` — gateway health + indexer status. */
   gatewayHealth() {
-    return this.callTool("agentx_gateway_health", {});
+    return this.callTool("actora_gateway_health", {});
   }
-  /** `agentx_gateway_tenant` — current tenant info (needs `X-Api-Key` header). */
+  /** `actora_gateway_tenant` — current tenant info (needs `X-Api-Key` header). */
   gatewayTenant() {
-    return this.callTool("agentx_gateway_tenant", {});
+    return this.callTool("actora_gateway_tenant", {});
   }
   // ── Centralized agents (C-6, off-chain) ──────────────────────────────────
   /**
-   * `agentx_central_agent_list` — centralized agents (source="central", negative
+   * `actora_central_agent_list` — centralized agents (source="central", negative
    * IDs, NOT on-chain NFTs) with their subscription plans (central_plans, same
    * structure as on-chain plans). Public read.
    */
   centralAgents(opts = {}) {
-    return this.callTool("agentx_central_agent_list", {
+    return this.callTool("actora_central_agent_list", {
       ...opts.activeOnly !== void 0 && { activeOnly: opts.activeOnly },
       ...opts.category !== void 0 && { category: opts.category },
       ...opts.capabilities !== void 0 && { capabilities: opts.capabilities },
@@ -191,12 +191,12 @@ var McpClient = class _McpClient {
     });
   }
   /**
-   * `agentx_central_subscription_check` — whether a wallet has an active
+   * `actora_central_subscription_check` — whether a wallet has an active
    * subscription for a centralized agent (negative agentId). Resolves off-chain
    * fiat/x402 records first (resolveAccess). Public read.
    */
   centralSubscriptionCheck(subscriber, agentId) {
-    return this.callTool("agentx_central_subscription_check", { subscriber, agentId });
+    return this.callTool("actora_central_subscription_check", { subscriber, agentId });
   }
 };
 // Annotate the CommonJS export names for ESM import in node:
