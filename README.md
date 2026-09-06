@@ -59,6 +59,46 @@ const op = await mcp.createPlan({ agentId: 2, price: '10000000000000000', period
 const status = await mcp.callTool('agentx_gateway_health', {})
 ```
 
+## 中心化 Agent（C-6，链下市场）用法示例
+
+中心化 Agent（`agents.source='central'`，**负 ID**，不发布在链上）订阅计划存于网关 DB（`central_plans`），但付费复用与链上完全相同的 x402 通道。MCP 提供两个公开读工具，用于发现中心化 Agent 与校验订阅状态：
+
+```typescript
+// 1. 中心化 Agent 列表 + 订阅计划（与链上 subscriptionPlans 同一响应结构）
+const { agents, total } = await mcp.centralAgents({
+  activeOnly: true, category: 'finance', page: 1, pageSize: 20,
+})
+// agents[0] → { id: -3, name, owner, description, category, isActive, subscriptionPlans: [...] }
+// plan     → { planId, price: "1000000000000000000", period: "month", payToken: "native", isActive, ... }
+
+// 2. 订阅状态检查（resolveAccess 链下优先 —— 与 App 订阅守卫同一判定）
+const { active } = await mcp.centralSubscriptionCheck('0x…', agents[0].id)
+// → { active: true, subscriber: '0x…', agentId: -3 }
+```
+
+等价于直接调用底层工具（通用 `callTool`，任何语言/HTTP 客户端可用）：
+
+```bash
+curl -s -X POST https://agentx.0xainet.top/mcp \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","id":1,"method":"tools/call",
+       "params":{"name":"agentx_central_agent_list",
+                 "arguments":{"activeOnly":true,"pageSize":20}}}'
+# → { agents: [...], total, page, pageSize }
+
+curl -s -X POST https://agentx.0xainet.top/mcp \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","id":2,"method":"tools/call",
+       "params":{"name":"agentx_central_subscription_check",
+                 "arguments":{"subscriber":"0x…","agentId":-3}}}'
+# → { active: true, subscriber: '0x…', agentId: -3 }
+```
+
+> **注意**
+> - 负 ID 是中心化 Agent 的标识，**不要**传给链上工具（`agentx_identity_*` / `agentx_subscription_*`）——那些工具读的是链上合约。
+> - 中心化 Agent 的**周期订阅付费**不在 MCP（MCP 不做支付），请用 SDK `SubscriptionPayments.pay({ method:'x402', agentId, planId, period, priceWei })`（v0.11.10+）或网关 REST。
+> - **发布**中心化 Agent：`POST /api/v1/agents/central`（JWT 或租户 Key，MCP 不提供发布/写工具）。
+
 ## 鉴权
 
 Gateway MCP 公开无鉴权（读取与 WRITE 描述）。租户相关工具（`agentx_gateway_tenant` 与全部对话/任务工具）需在调用参数中带 `api_key`（`X-Api-Key`）或 `access_token`（JWT）：
