@@ -1,12 +1,12 @@
 # @actora/mcp
 
-**Actora MCP 客户端包** — 类型化访问 Actora Gateway 的 MCP 服务（40 个工具）：IdentityRegistry 读取、订阅套餐/操作、**中心化 Agent（C-6，链下市场）**、A2A、信誉、配置、端点、**对话与并行任务管理**。
+**Actora MCP 客户端包** — 类型化访问 Actora Gateway 的 MCP 服务（43 个工具）：IdentityRegistry 读取、订阅套餐/操作、**中心化 Agent（C-6，链下市场）发布/订阅**、A2A、信誉、配置、端点、**对话与并行任务管理**。
 
 ```
 第三方服务 ── @actora/mcp ──► POST <GATEWAY>/mcp (MCP JSON-RPC 2.0)
                                  ├─ actora_identity_*     链上 Agent 读取
                                  ├─ actora_subscription_* 订阅套餐 / 写操作描述
-                                 ├─ actora_central_*      中心化 Agent（链下，负 ID）：列表 / 订阅状态
+                                 ├─ actora_central_*      中心化 Agent（链下，负 ID）：发布 / 更新 / 列表 / 订阅状态 / 订阅购买
                                  ├─ actora_a2a_* / reputation / config / endpoint
                                  ├─ actora_gateway_health / tenant
                                  └─ actora_gateway_chat / create_session / create_task / get_task / list_tasks / cancel_task
@@ -35,7 +35,7 @@ const info = await mcp.initialize()
 console.log('server:', info)                // { name, version }
 
 const tools = await mcp.listTools()
-console.log('工具数:', tools.length)         // 40
+console.log('工具数:', tools.length)         // 43
 
 // 批量查询 Agent（等价 SDK getAllAgents）
 const { agents, total } = await mcp.listAgents({ fromId: 1, toId: total, activeOnly: true })
@@ -61,7 +61,7 @@ const status = await mcp.callTool('actora_gateway_health', {})
 
 ## 中心化 Agent（C-6，链下市场）用法示例
 
-中心化 Agent（`agents.source='central'`，**负 ID**，不发布在链上）订阅计划存于网关 DB（`central_plans`），但付费复用与链上完全相同的 x402 通道。MCP 提供两个公开读工具，用于发现中心化 Agent 与校验订阅状态：
+中心化 Agent（`agents.source='central'`，**负 ID**，不发布在链上）订阅计划存于网关 DB（`central_plans`），但付费复用与链上完全相同的 x402 通道。MCP 提供中心化 Agent 的**发布 / 更新 / 订阅购买 / 列表 / 订阅状态**共 5 个工具：
 
 ```typescript
 // 1. 中心化 Agent 列表 + 订阅计划（与链上 subscriptionPlans 同一响应结构）
@@ -94,10 +94,38 @@ curl -s -X POST https://actora.codes/mcp \
 # → { active: true, subscriber: '0x…', agentId: -3 }
 ```
 
+**发布 / 更新与订阅购买**（WRITE，需 `access_token` 注册用户 JWT——MCP 的对话/中心化写工具不接受 B 端 `api_key`）：
+
+```bash
+# 发布中心化 Agent（C-6，链下）：自动创建默认 1 OXA/月 计划
+curl -s -X POST https://actora.codes/mcp \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","id":3,"method":"tools/call",
+       "params":{"name":"actora_central_agent_create",
+                 "arguments":{"access_token":"<user-jwt>","name":"My Agent",
+                              "description":"...","capabilities":["chat","trading"]}}}'
+# → { id: -N, name, owner, ... }
+
+# 更新 / 上架 / 下架自己发布的中心化 Agent（仅提供变化的字段）
+curl -s -X POST https://actora.codes/mcp \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","id":4,"method":"tools/call",
+       "params":{"name":"actora_central_agent_update",
+                 "arguments":{"access_token":"<user-jwt>","agentId":-3,"isActive":true}}}'
+
+# 中心化订阅购买（x402）：首次调用返回付款指令（amountWei / payTo / network），
+# 钱包完成链上转账后携 txHash 再次调用以验证并开通
+curl -s -X POST https://actora.codes/mcp \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","id":5,"method":"tools/call",
+       "params":{"name":"actora_central_subscription_subscribe",
+                 "arguments":{"access_token":"<user-jwt>","subscriber":"0x…","agentId":-3,"period":"month"}}}'
+# → { paymentRequired: true, amountWei, payTo, network, instructions }
+```
+
 > **注意**
 > - 负 ID 是中心化 Agent 的标识，**不要**传给链上工具（`actora_identity_*` / `actora_subscription_*`）——那些工具读的是链上合约。
-> - 中心化 Agent 的**周期订阅付费**不在 MCP（MCP 不做支付），请用 SDK `SubscriptionPayments.pay({ method:'x402', agentId, planId, period, priceWei })`（v0.11.10+）或网关 REST。
-> - **发布**中心化 Agent：`POST /api/v1/agents/central`（JWT 或租户 Key，MCP 不提供发布/写工具）。
+> - 中心化 Agent 的**发布 / 更新 / 订阅购买**（`actora_central_agent_create` / `actora_central_agent_update` / `actora_central_subscription_subscribe`）均需 `access_token` 注册用户 JWT。**周期订阅付费**也可用 SDK `SubscriptionPayments.pay({ method:'x402', agentId, planId, period, priceWei })`（v0.11.10+）或网关 REST 完成。
 
 ## 鉴权
 
@@ -127,6 +155,9 @@ const mcp = new McpClient({
 | `checkSubscription(sub, agentId)` | `actora_subscription_check` | 订阅有效性（链上） |
 | `centralAgents({activeOnly,category,capabilities,page,pageSize})` | `actora_central_agent_list` | 中心化 Agent 列表 + 计划（链下，C-6） |
 | `centralSubscriptionCheck(sub, agentId)` | `actora_central_subscription_check` | 中心化 Agent 订阅有效性（resolveAccess 链下优先） |
+| `centralAgentCreate({name,...})` | `actora_central_agent_create` | 发布中心化 Agent（WRITE，需 `access_token`） |
+| `centralAgentUpdate({agentId,...})` | `actora_central_agent_update` | 更新/上架/下架中心化 Agent（WRITE，需 `access_token`） |
+| `centralSubscriptionSubscribe({agentId,subscriber,period,txHash})` | `actora_central_subscription_subscribe` | 中心化订阅购买（x402，WRITE，需 `access_token`） |
 | `subscriptionDetail(id)` / `mySubscriptions(addr)` | `actora_subscription_detail/my_list` | 订阅详情/列表 |
 | `platformFee(chain?)` | `actora_subscription_fee` | 平台费率（bps） |
 | `gatewayHealth()` / `gatewayTenant()` | `actora_gateway_health/tenant` | Gateway 状态 |
