@@ -27,7 +27,6 @@ import { McpClient } from '@actora/mcp'
 
 const mcp = new McpClient({
   gatewayUrl: 'https://actora.codes',  // Actora Gateway
-  defaultChain: 'oxachain',                 // 默认链（对齐服务端默认 'sepolia'）
 })
 
 // 握手 + 工具列表
@@ -97,7 +96,7 @@ curl -s -X POST https://actora.codes/mcp \
 **发布 / 更新与订阅购买**（WRITE，需 `access_token` 注册用户 JWT——MCP 的对话/中心化写工具不接受 B 端 `api_key`）：
 
 ```bash
-# 发布中心化 Agent（C-6，链下）：自动创建默认 1 OXA/月 计划
+# 发布中心化 Agent（C-6，链下）：自动创建默认月度计划
 curl -s -X POST https://actora.codes/mcp \
   -H "Content-Type: application/json" \
   -d '{"jsonrpc":"2.0","id":3,"method":"tools/call",
@@ -168,7 +167,7 @@ const mcp = new McpClient({
 - **period**：`createPlan` 仅接受 `'day' | 'week' | 'month' | 'year'`（合约 `_periodToSeconds` 只映射这四个值，其他字符串会静默回退 30 天）。
 - **price**：wei 十进制字符串（避免精度丢失）。
 - **WRITE 工具**：返回 `{ _writeOp: true, contract, chain, args }` 描述，交易签名/提交由调用方钱包完成。
-- **chain**：`'sepolia'`（默认，对齐服务端）或 `'oxachain'`（L1 主网）。
+- **chain**：`'sepolia'`（默认，测试网）。
 - **Node 18+ / 浏览器**：依赖原生 `fetch`，无其他运行时依赖。
 
 ## 完整服务端工具与协议
