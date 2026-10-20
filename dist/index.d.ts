@@ -1,5 +1,5 @@
 /** Chain selector accepted by every Actora MCP tool. */
-type McpChain = 'sepolia' | 'oxachain';
+type McpChain = 'sepolia' | 'bsc';
 /** A tool schema as returned by `tools/list`. */
 interface McpToolSchema {
     name: string;
