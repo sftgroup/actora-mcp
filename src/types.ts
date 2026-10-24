@@ -82,11 +82,24 @@ export interface PlanResult {
   planId: number
   agentId: number
   creator: string
+  /** Alias of `subscriptionPrice` (wei / token units, decimal string). */
   price: string
   period: string
   active: boolean
   payToken: string
+  /** Always 0 — ERC8004SubscriptionManager has no trial period. */
   trialDays: number
+  name: string
+  description: string
+  /** 0=Subscription, 1=UsageBased, 2=Hybrid */
+  planType: number
+  subscriptionPrice: string
+  usagePrice: string
+  /** 0=Daily, 1=Weekly, 2=Monthly, 3=Quarterly, 4=Yearly */
+  billingPeriod: number
+  maxUsage: string
+  totalUsageLimit: string
+  platformFeePercentage: number
   chain: string
   chainId: number
 }
@@ -101,17 +114,24 @@ export interface CheckSubscriptionResult {
 
 export interface SubscriptionDetailResult {
   subscriptionId: number
+  planId: number
   subscriber: string
   agentId: number
-  status: string
+  /** 0=Active, 1=Cancelled, 2=Expired, 3=PaymentFailed, 4=Suspended */
+  status: number
+  /** 0=Subscription, 1=UsageBased, 2=Hybrid */
+  planType: number
   startedAt: number
-  expiresAt: number
+  /** Next charge date (renewal anchor). */
+  nextBillingDate: number
+  endDate: number
   period: string
   payToken: string
   amountPaid: string
-  trialActive: boolean
-  trialEndsAt: number
-  fundsReleased: boolean
+  currentPeriodUsage: string
+  totalUsage: string
+  remainingUsage: string
+  lastPaymentDate: number
   chain: string
   chainId: number
 }

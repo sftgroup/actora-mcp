@@ -169,17 +169,24 @@ export class McpClient {
 
   /** `actora_subscription_create_plan` — WRITE descriptor (sign & submit with a wallet). */
   createPlan(args: {
-    agentId: number; price: string;
-    period: 'day' | 'week' | 'month' | 'year';
-    payToken?: string; trialDays?: number; chain?: McpChain
+    agentId: number
+    /** Recurring price in wei/token units (required unless planType=1). */
+    price?: string
+    /** Per-use price (required when planType is 1 or 2). */
+    usagePrice?: string
+    period: 'day' | 'week' | 'month' | 'quarter' | 'year'
+    planType?: 0 | 1 | 2
+    name?: string
+    description?: string
+    payToken?: string
+    maxUsage?: string
+    totalUsageLimit?: string
+    chain?: McpChain
   }): Promise<WriteOpResult> {
+    const { chain, ...rest } = args
     return this.callTool('actora_subscription_create_plan', {
-      chain: args.chain ?? this.defaultChain,
-      agentId: args.agentId,
-      price: args.price,
-      period: args.period,
-      ...(args.payToken !== undefined && { payToken: args.payToken }),
-      ...(args.trialDays !== undefined && { trialDays: args.trialDays }),
+      chain: chain ?? this.defaultChain,
+      ...Object.fromEntries(Object.entries(rest).filter(([, v]) => v !== undefined)),
     })
   }
 
@@ -212,7 +219,7 @@ export class McpClient {
     return this.callTool('actora_subscription_cancel', { chain: chain ?? this.defaultChain, subscriptionId })
   }
 
-  /** `actora_subscription_release` — WRITE descriptor (release escrowed funds). */
+  /** `actora_subscription_release` — deprecated (no escrow); returns an error result. */
   releaseFunds(subscriptionId: number, chain?: McpChain): Promise<WriteOpResult> {
     return this.callTool('actora_subscription_release', { chain: chain ?? this.defaultChain, subscriptionId })
   }
