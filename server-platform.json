@@ -1,0 +1,25 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.sftgroup/actora-platform",
+  "title": "Actora Platform — Agent Publishing, Subscriptions & A2A",
+  "description": "Actora developer tools: ERC-8004 identity, subscriptions, listings, A2A, reputation.",
+  "version": "0.2.0",
+  "websiteUrl": "https://actora.codes",
+  "repository": {
+    "url": "https://github.com/sftgroup/Agentx",
+    "source": "github"
+  },
+  "icons": [
+    {
+      "src": "https://actora.codes/icon-512.png",
+      "mimeType": "image/png",
+      "sizes": ["512x512"]
+    }
+  ],
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://actora.codes/mcp/platform"
+    }
+  ]
+}

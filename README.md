@@ -181,6 +181,14 @@ const mcp = new McpClient({
 - **`Authorization: Bearer <JWT>`**（推荐，目录/客户端只需配一个 header）
 - 工具参数 `access_token`（兼容旧调用方；显式传参优先）
 
+按受众拆分的两个入口（同一套实现，工具子集不同）：
+
+| 入口 | 工具数 | 面向 | 清单 |
+|---|---|---|---|
+| `/mcp` | 51 | 全量（兼容旧调用方） | `server.json` |
+| `/mcp/platform` | 42 | Agent 开发者：身份 / 订阅 / 上架定价 / 端点探活 / A2A / 信誉 | `server-platform.json` |
+| `/mcp/tenant` | 9 | B 端：托管对话 / 会话 / 任务 / 套餐 / 用量 | `server-tenant.json` |
+
 本目录的 `server.json` 是[官方 MCP Registry](https://registry.modelcontextprotocol.io) 清单（已按 `2025-12-11` schema 校验）：
 
 ```bash

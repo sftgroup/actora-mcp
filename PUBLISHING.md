@@ -4,35 +4,40 @@
 
 ## 0. 服务事实（提交时统一使用）
 
+| 服务 | 名称 | 远程地址 | 工具数 | 清单 |
+|---|---|---|---|---|
+| 全量 | `io.github.sftgroup/actora` | `https://actora.codes/mcp` | 51 | `server.json` |
+| 开发者 | `io.github.sftgroup/actora-platform` | `https://actora.codes/mcp/platform` | 42 | `server-platform.json` |
+| B 端 | `io.github.sftgroup/actora-tenant` | `https://actora.codes/mcp/tenant` | 9 | `server-tenant.json` |
+
+公共字段：
+
 | 字段 | 值 |
 |---|---|
-| 名称 | `io.github.sftgroup/actora` |
-| 标题 | Actora — Agent Identity, Subscriptions & A2A |
-| 描述 | ERC-8004 agent identity, on-chain subscriptions, reputation, A2A tasks and chat over 51 tools. |
-| 远程地址 | `https://actora.codes/mcp` |
 | 传输 | Streamable HTTP（无状态 POST JSON-RPC 2.0） |
 | 协议版本 | `2024-11-05`（客户端请求新版本时回落，规范允许） |
 | 仓库 | `https://github.com/sftgroup/Agentx` |
 | 官网 | `https://actora.codes` |
 | 图标 | `https://actora.codes/icon-512.png` |
 | 鉴权 | 只读工具匿名；执行类工具需 JWT，支持 `Authorization: Bearer <JWT>` 或工具参数 `access_token` |
-| 工具数 | 51（`tools/list`） |
 
 ## 1. 官方 MCP Registry（首选）
 
-清单文件：[server.json](./server.json)（已按 `2025-12-11` schema 校验通过）。
+三个清单均已按 `2025-12-11` schema 校验通过。命名空间 `io.github.sftgroup` 需组织权限。
 
 ```bash
 # 安装 mcp-publisher（按官方 Registry README）
-mcp-publisher login github   # 需 sftgroup 组织成员，验证 io.github.sftgroup 命名空间
+mcp-publisher login github   # 需 sftgroup 组织成员
 cd mcp
-mcp-publisher publish
+mcp-publisher publish --file server-platform.json
+mcp-publisher publish --file server-tenant.json
+mcp-publisher publish --file server.json
 ```
 
 发布后校验：
 
 ```bash
-curl -s https://registry.modelcontextprotocol.io/v0/servers?search=actora | head -c 800
+curl -s "https://registry.modelcontextprotocol.io/v0/servers?search=actora" | head -c 800
 ```
 
 ## 2. Smithery
