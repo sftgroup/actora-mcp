@@ -173,3 +173,25 @@ const mcp = new McpClient({
 ## 完整服务端工具与协议
 
 见仓库 [MCP_SETUP.md](https://github.com/sftgroup/Agentx/blob/main/MCP_SETUP.md) 与 [docs/sdk-integration-example.md](https://github.com/sftgroup/Agentx/blob/main/docs/sdk-integration-example.md)。
+
+## 公开目录登记（服务端分发）
+
+服务端已托管在 `https://actora.codes/mcp`：MCP JSON-RPC 2.0，**43 个工具**，`initialize` / `tools/list` 无需鉴权（执行类工具需网关 JWT）。本目录的 `server.json` 是[官方 MCP Registry](https://registry.modelcontextprotocol.io) 清单（已按 `2025-12-11` schema 校验）：
+
+```bash
+cd mcp
+mcp-publisher login github   # 需 sftgroup 组织权限，命名空间 io.github.sftgroup
+mcp-publisher publish        # 读取 server.json
+```
+
+其他目录（Smithery / mcp.so / Glama / PulseMCP）均按 GitHub 仓库或该清单收录，提交时统一填：
+
+| 字段 | 值 |
+|---|---|
+| 远程地址 | `https://actora.codes/mcp` |
+| 传输 | Streamable HTTP |
+| 仓库 | `https://github.com/sftgroup/Agentx` |
+| 图标 | `https://actora.codes/icon-512.png` |
+
+**兼容性**：服务端当前协商到 MCP `2024-11-05`（无 `Mcp-Session-Id`，无状态 POST）。新客户端请求 `2025-03-26` 时会回落到 `2024-11-05`，按规范可接受；若目录审核要求 Streamable HTTP 会话，需先补协议版本协商。
+
