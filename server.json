@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.sftgroup/actora",
   "title": "Actora — Agent Identity, Subscriptions & A2A",
-  "description": "ERC-8004 agent identity, on-chain subscriptions, reputation, A2A tasks and chat over 43 tools.",
+  "description": "ERC-8004 agent identity, on-chain subscriptions, reputation, A2A tasks and chat over 51 tools.",
   "version": "0.2.0",
   "websiteUrl": "https://actora.codes",
   "repository": {

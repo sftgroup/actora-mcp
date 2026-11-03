@@ -8,7 +8,7 @@
 |---|---|
 | 名称 | `io.github.sftgroup/actora` |
 | 标题 | Actora — Agent Identity, Subscriptions & A2A |
-| 描述 | ERC-8004 agent identity, on-chain subscriptions, reputation, A2A tasks and chat over 43 tools. |
+| 描述 | ERC-8004 agent identity, on-chain subscriptions, reputation, A2A tasks and chat over 51 tools. |
 | 远程地址 | `https://actora.codes/mcp` |
 | 传输 | Streamable HTTP（无状态 POST JSON-RPC 2.0） |
 | 协议版本 | `2024-11-05`（客户端请求新版本时回落，规范允许） |
@@ -16,7 +16,7 @@
 | 官网 | `https://actora.codes` |
 | 图标 | `https://actora.codes/icon-512.png` |
 | 鉴权 | 只读工具匿名；执行类工具需 JWT，支持 `Authorization: Bearer <JWT>` 或工具参数 `access_token` |
-| 工具数 | 43（`tools/list`） |
+| 工具数 | 51（`tools/list`） |
 
 ## 1. 官方 MCP Registry（首选）
 
@@ -58,7 +58,7 @@ curl -s https://registry.modelcontextprotocol.io/v0/servers?search=actora | head
 curl -s -X POST https://actora.codes/mcp -H 'Content-Type: application/json' \
   -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"probe","version":"0"}}}'
 
-# 工具数应为 43
+# 工具数应为 51
 curl -s -X POST https://actora.codes/mcp -H 'Content-Type: application/json' \
   -d '{"jsonrpc":"2.0","id":2,"method":"tools/list"}' \
   | python3 -c 'import sys,json;print(len(json.load(sys.stdin)["result"]["tools"]))'
