@@ -176,7 +176,12 @@ const mcp = new McpClient({
 
 ## 公开目录登记（服务端分发）
 
-服务端已托管在 `https://actora.codes/mcp`：MCP JSON-RPC 2.0，**43 个工具**，`initialize` / `tools/list` 无需鉴权（执行类工具需网关 JWT）。本目录的 `server.json` 是[官方 MCP Registry](https://registry.modelcontextprotocol.io) 清单（已按 `2025-12-11` schema 校验）：
+服务端已托管在 `https://actora.codes/mcp`：MCP JSON-RPC 2.0，**43 个工具**，`initialize` / `tools/list` 无需鉴权。执行类工具的 JWT 支持两种来源（两者等价）：
+
+- **`Authorization: Bearer <JWT>`**（推荐，目录/客户端只需配一个 header）
+- 工具参数 `access_token`（兼容旧调用方；显式传参优先）
+
+本目录的 `server.json` 是[官方 MCP Registry](https://registry.modelcontextprotocol.io) 清单（已按 `2025-12-11` schema 校验）：
 
 ```bash
 cd mcp
