@@ -1,6 +1,6 @@
 # Actora MCP — 公开目录上架清单
 
-面向 B 端开发者的交付物是**托管 MCP 服务**（不是 marketplace 里的某个 agent）。本文件是可直接粘贴的提交材料与验收方式；代码侧已就绪，剩余发布动作需要**账号登录 / 仓库可见性**（见 §6）。
+面向 B 端开发者的交付物是**托管 MCP 服务**（不是 marketplace 里的某个 agent）。本文件是可直接粘贴的提交材料与验收方式；代码侧与仓库可见性均已就绪，剩余发布动作需要**各站点账号登录**（见 §6）。
 
 3 分钟接入示例见 [README.md](./README.md#3-分钟接入远程-http无需安装)。
 
@@ -90,7 +90,7 @@ curl -s "https://registry.modelcontextprotocol.io/v0/servers?search=sftgroup" \
 - **鉴权限制**：Smithery 的配置表单把 `authorization` 保留给 OAuth，不能作为用户输入字段；本服务的 JWT 只认 `Authorization: Bearer`。因此：
   - 匿名可用的只读工具（`actora_identity_*` 等）可正常通过 Smithery 使用
   - 写工具/对话工具需把 JWT 作为工具参数 `access_token` 显式传入，或由客户端直连
-- 若控制台要求仓库部署（而非远程 URL），需先让 `sftgroup/Agentx` 公开（见 §6）
+- 若控制台要求仓库部署（而非远程 URL），请使用公开仓 `sftgroup/actora-mcp`
 
 ## 4. mcp.so / Glama / PulseMCP
 
@@ -141,4 +141,4 @@ MCP Inspector（`npx @modelcontextprotocol/inspector`）连接上述任一 URL �
 | Glama | 材料就绪，**待索引/认领** | 仓库公开或 Glama 账号认领 |
 | PulseMCP | 材料就绪，**待提交** | 站点账号 |
 
-> **仓库可见性**：`sftgroup/Agentx` 当前为 **private**，官方 Registry 与远程 URL 型入口不受影响（清单里只记录仓库地址），但 Glama / Smithery 的 GitHub 自动索引需要公开仓库。是否开源由业务侧决定，本清单不代为变更。
+> **仓库可见性**：`sftgroup/actora-mcp` 已公开，Glama / Smithery 可直接按其 GitHub 索引流程提交。
