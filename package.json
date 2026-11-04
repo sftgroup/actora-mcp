@@ -1,6 +1,6 @@
 {
   "name": "@actora/mcp",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Actora MCP client — typed access to the Actora Gateway MCP server (52 tools): IdentityRegistry reads, subscription plans/actions, centralized agents (C-6, off-chain), A2A, reputation, config, endpoints, dialogue & parallel task management.",
   "keywords": ["actora", "mcp", "ai-agent", "blockchain", "web3", "identity-registry"],
   "license": "MIT",
@@ -22,10 +22,12 @@
   "scripts": {
     "build": "tsup src/index.ts --format cjs,esm --dts --clean --out-dir dist",
     "typecheck": "tsc --noEmit",
-    "prepublishOnly": "npm run typecheck && npm run build"
+    "test": "vitest run",
+    "prepublishOnly": "npm run typecheck && npm test && npm run build"
   },
   "devDependencies": {
     "tsup": "^8.0.0",
-    "typescript": "^5.2.0"
+    "typescript": "^5.2.0",
+    "vitest": "^2.1.0"
   }
 }

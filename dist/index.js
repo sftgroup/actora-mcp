@@ -49,7 +49,7 @@ var McpClient = class _McpClient {
     const result = await this.rpc("initialize", {
       protocolVersion: "2024-11-05",
       capabilities: {},
-      clientInfo: { name: "@actora/mcp", version: "0.1.0" }
+      clientInfo: { name: "@actora/mcp", version: "0.2.1" }
     });
     this.serverInfo = result.serverInfo ?? {};
     return this.serverInfo;
