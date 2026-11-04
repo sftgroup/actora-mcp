@@ -99,13 +99,10 @@ var McpClient = class _McpClient {
   }
   /** `actora_subscription_create_plan` — WRITE descriptor (sign & submit with a wallet). */
   createPlan(args) {
+    const { chain, ...rest } = args;
     return this.callTool("actora_subscription_create_plan", {
-      chain: args.chain ?? this.defaultChain,
-      agentId: args.agentId,
-      price: args.price,
-      period: args.period,
-      ...args.payToken !== void 0 && { payToken: args.payToken },
-      ...args.trialDays !== void 0 && { trialDays: args.trialDays }
+      chain: chain ?? this.defaultChain,
+      ...Object.fromEntries(Object.entries(rest).filter(([, v]) => v !== void 0))
     });
   }
   /** `actora_subscription_check` — active subscription for (wallet, agent). */
@@ -132,7 +129,7 @@ var McpClient = class _McpClient {
   cancelSubscription(subscriptionId, chain) {
     return this.callTool("actora_subscription_cancel", { chain: chain ?? this.defaultChain, subscriptionId });
   }
-  /** `actora_subscription_release` — WRITE descriptor (release escrowed funds). */
+  /** `actora_subscription_release` — deprecated (no escrow); returns an error result. */
   releaseFunds(subscriptionId, chain) {
     return this.callTool("actora_subscription_release", { chain: chain ?? this.defaultChain, subscriptionId });
   }

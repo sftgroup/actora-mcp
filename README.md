@@ -14,6 +14,51 @@
 
 > 与 [@actora/sdk](https://www.npmjs.com/package/@actora/sdk) 的区别：SDK 直连区块链（读/写/事件），本包走 Gateway MCP 协议（工具化调用，无需 RPC 端点，生产地址由 Gateway 提供）。
 
+## 3 分钟接入（远程 HTTP，无需安装）
+
+三个入口共用同一套 JSON-RPC 2.0 实现，`initialize` / `tools/list` 不需要任何凭证。
+
+```bash
+# ① 握手：应返回 protocolVersion=2024-11-05 与 serverInfo
+curl -s -X POST https://actora.codes/mcp/platform -H 'Content-Type: application/json' \
+  -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"probe","version":"0"}}}'
+# → {"result":{"protocolVersion":"2024-11-05","serverInfo":{"name":"actora-platform","version":"0.2.0"},"capabilities":{"tools":{}}}}
+
+# ② 工具数：/mcp=52 · /mcp/platform=43 · /mcp/tenant=9
+curl -s -X POST https://actora.codes/mcp/platform -H 'Content-Type: application/json' \
+  -d '{"jsonrpc":"2.0","id":2,"method":"tools/list"}' \
+  | python3 -c 'import sys,json;print(len(json.load(sys.stdin)["result"]["tools"]))'
+
+# ③ 调用一个只读工具（匿名可用）
+curl -s -X POST https://actora.codes/mcp/platform -H 'Content-Type: application/json' \
+  -d '{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"actora_identity_total_count","arguments":{"chain":"bsc"}}}'
+# → {"content":[{"type":"text","text":"{\"totalAgents\": 22, \"chain\": \"BSC\", \"chainId\": 56}"}],"isError":false}
+
+# ④ 需要身份的租户/对话工具：带注册用户 JWT（目录型客户端只需配一个 header）
+curl -s -X POST https://actora.codes/mcp/tenant -H 'Content-Type: application/json' \
+  -H "Authorization: Bearer $ACTORA_JWT" \
+  -d '{"jsonrpc":"2.0","id":4,"method":"tools/call","params":{"name":"actora_gateway_chat","arguments":{"message":"hello"}}}'
+```
+
+客户端接入（以 `/mcp/platform` 为例；字段名以各客户端文档为准）：
+
+```json
+{
+  "mcpServers": {
+    "actora": { "url": "https://actora.codes/mcp/platform" },
+    "actora-tenant": {
+      "url": "https://actora.codes/mcp/tenant",
+      "headers": { "Authorization": "Bearer <registered-user JWT>" }
+    }
+  }
+}
+```
+
+```bash
+# Claude Code
+claude mcp add --transport http actora https://actora.codes/mcp/platform
+```
+
 ## 安装
 
 ```bash
@@ -128,14 +173,22 @@ curl -s -X POST https://actora.codes/mcp \
 
 ## 鉴权
 
-Gateway MCP 公开无鉴权（读取与 WRITE 描述）。租户相关工具（`actora_gateway_tenant` 与全部对话/任务工具）需在调用参数中带 `api_key`（`X-Api-Key`）或 `access_token`（JWT）：
+只读工具（`actora_identity_*`、`actora_subscription_*` 查询、信誉/端点读取等）匿名可用。需要身份的写工具与租户/对话/任务工具要求**注册用户 JWT**，两种来源等价：
+
+- `Authorization: Bearer <JWT>`（推荐，目录型客户端只需配一个 header）
+- 工具参数 `access_token`（显式传参优先，兼容旧调用方）
 
 ```typescript
 const mcp = new McpClient({
-  gatewayUrl: '...',
-  headers: { 'X-Api-Key': 'actora_sk_live_...' },
+  gatewayUrl: 'https://actora.codes',
+  headers: { Authorization: 'Bearer <registered-user JWT>' },
 })
 ```
+
+> **注意**
+> - MCP **不接受** B 端 `api_key`（`actora_sk_…`，`X-Api-Key`）——那把钥匙只用于 REST `/api/v1`。MCP 的对话/任务工具只认注册用户 JWT。
+> - `Authorization: Bearer` 会被注入为工具参数 `access_token`；`actora_gateway_tenant` 的参数名是 `accessToken`，**不会**被自动注入，需显式传 `{"accessToken":"<JWT>"}`。
+> - 未带/无效 JWT 时，工具返回 `{"error":"HTTP 401","detail":"Invalid or expired token"}`，属预期行为。
 
 ## API 一览
 
@@ -185,16 +238,17 @@ const mcp = new McpClient({
 
 | 入口 | 工具数 | 面向 | 清单 |
 |---|---|---|---|
-| `/mcp` | 51 | 全量（兼容旧调用方） | `server.json` |
-| `/mcp/platform` | 42 | Agent 开发者：身份 / 订阅 / 上架定价 / 端点探活 / A2A / 信誉 | `server-platform.json` |
+| `/mcp` | 52 | 全量（兼容旧调用方） | `server.json` |
+| `/mcp/platform` | 43 | Agent 开发者：身份 / 订阅 / 上架定价 / 端点探活 / A2A / 信誉 | `server-platform.json` |
 | `/mcp/tenant` | 9 | B 端：托管对话 / 会话 / 任务 / 套餐 / 用量 | `server-tenant.json` |
 
-本目录的 `server.json` 是[官方 MCP Registry](https://registry.modelcontextprotocol.io) 清单（已按 `2025-12-11` schema 校验）：
+本目录的 `server.json` 是[官方 MCP Registry](https://registry.modelcontextprotocol.io) 清单（已按 `2025-12-11` schema 校验）。三个服务已于 **2026-11-04** 以 `0.2.0` 发布，搜索 `sftgroup` 可检索到：
 
 ```bash
-cd mcp
-mcp-publisher login github   # 需 sftgroup 组织权限，命名空间 io.github.sftgroup
-mcp-publisher publish        # 读取 server.json
+mcp-publisher login github   # 需 sftgroup 账号授权（命名空间 io.github.sftgroup）
+mcp-publisher publish server-platform.json
+mcp-publisher publish server-tenant.json
+mcp-publisher publish server.json   # 同版本号不可覆盖，升版本后重发
 ```
 
 其他目录（Smithery / mcp.so / Glama / PulseMCP）均按 GitHub 仓库或该清单收录，提交时统一填：

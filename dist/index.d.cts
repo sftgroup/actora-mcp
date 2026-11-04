@@ -71,11 +71,24 @@ interface PlanResult {
     planId: number;
     agentId: number;
     creator: string;
+    /** Alias of `subscriptionPrice` (wei / token units, decimal string). */
     price: string;
     period: string;
     active: boolean;
     payToken: string;
+    /** Always 0 — ERC8004SubscriptionManager has no trial period. */
     trialDays: number;
+    name: string;
+    description: string;
+    /** 0=Subscription, 1=UsageBased, 2=Hybrid */
+    planType: number;
+    subscriptionPrice: string;
+    usagePrice: string;
+    /** 0=Daily, 1=Weekly, 2=Monthly, 3=Quarterly, 4=Yearly */
+    billingPeriod: number;
+    maxUsage: string;
+    totalUsageLimit: string;
+    platformFeePercentage: number;
     chain: string;
     chainId: number;
 }
@@ -88,17 +101,24 @@ interface CheckSubscriptionResult {
 }
 interface SubscriptionDetailResult {
     subscriptionId: number;
+    planId: number;
     subscriber: string;
     agentId: number;
-    status: string;
+    /** 0=Active, 1=Cancelled, 2=Expired, 3=PaymentFailed, 4=Suspended */
+    status: number;
+    /** 0=Subscription, 1=UsageBased, 2=Hybrid */
+    planType: number;
     startedAt: number;
-    expiresAt: number;
+    /** Next charge date (renewal anchor). */
+    nextBillingDate: number;
+    endDate: number;
     period: string;
     payToken: string;
     amountPaid: string;
-    trialActive: boolean;
-    trialEndsAt: number;
-    fundsReleased: boolean;
+    currentPeriodUsage: string;
+    totalUsage: string;
+    remainingUsage: string;
+    lastPaymentDate: number;
     chain: string;
     chainId: number;
 }
@@ -227,10 +247,17 @@ declare class McpClient {
     /** `actora_subscription_create_plan` — WRITE descriptor (sign & submit with a wallet). */
     createPlan(args: {
         agentId: number;
-        price: string;
-        period: 'day' | 'week' | 'month' | 'year';
+        /** Recurring price in wei/token units (required unless planType=1). */
+        price?: string;
+        /** Per-use price (required when planType is 1 or 2). */
+        usagePrice?: string;
+        period: 'day' | 'week' | 'month' | 'quarter' | 'year';
+        planType?: 0 | 1 | 2;
+        name?: string;
+        description?: string;
         payToken?: string;
-        trialDays?: number;
+        maxUsage?: string;
+        totalUsageLimit?: string;
         chain?: McpChain;
     }): Promise<WriteOpResult>;
     /** `actora_subscription_check` — active subscription for (wallet, agent). */
@@ -246,7 +273,7 @@ declare class McpClient {
     }): Promise<WriteOpResult>;
     /** `actora_subscription_cancel` — WRITE descriptor. */
     cancelSubscription(subscriptionId: number, chain?: McpChain): Promise<WriteOpResult>;
-    /** `actora_subscription_release` — WRITE descriptor (release escrowed funds). */
+    /** `actora_subscription_release` — deprecated (no escrow); returns an error result. */
     releaseFunds(subscriptionId: number, chain?: McpChain): Promise<WriteOpResult>;
     /** `actora_subscription_fee` — current platform fee in basis points. */
     platformFee(chain?: McpChain): Promise<FeeResult>;
