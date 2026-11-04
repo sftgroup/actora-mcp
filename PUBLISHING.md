@@ -144,7 +144,7 @@ MCP Inspector（`npx @modelcontextprotocol/inspector`）连接上述任一 URL �
 | 目录 | 状态 | 阻塞项 |
 |---|---|---|
 | 官方 MCP Registry | ✅ **已发布 0.2.1（2026-11-05）**，三条均 `active`，`repository.url` 指向 `actora-mcp` | — |
-| Glama | ✅ **已被自动收录 3 个 connector（healthy）**；待认领 | 认领需 `glama.json`（GitHub 用户名），API key 不行 |
+| Glama | ✅ **已收录 3 个 connector 并完成认领**（2026-11-05，`Ownership verified`） | — |
 | mcp.so | 材料就绪，**待提交** | 站点账号 |
 | Smithery | 被动：代理/CLI 已于 2026-10-31 关停 | 只查旧条目，不新提交 |
 | PulseMCP | 被动：提交入口 2026-09-03 起暂停 | 等其重开后从 Registry 自动收录 |
