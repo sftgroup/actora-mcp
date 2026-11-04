@@ -135,7 +135,7 @@ MCP Inspector（`npx @modelcontextprotocol/inspector`）连接上述任一 URL �
 
 | 目录 | 状态 | 阻塞项 |
 |---|---|---|
-| 官方 MCP Registry | ✅ **已发布 0.2.0（2026-11-04）**，三条均可检索 | — |
+| 官方 MCP Registry | ✅ **已发布 0.2.1（2026-11-05）**，三条均 `active`，`repository.url` 指向 `actora-mcp` | — |
 | Smithery | 材料就绪，**待提交** | 站点账号（远程 URL 型可先上只读工具） |
 | mcp.so | 材料就绪，**待提交** | 站点账号 |
 | Glama | 材料就绪，**待索引/认领** | 仓库公开或 Glama 账号认领 |
