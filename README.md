@@ -1,6 +1,6 @@
 # @actora/mcp
 
-**Actora MCP 客户端包** — 类型化访问 Actora Gateway 的 MCP 服务（51 个工具）：IdentityRegistry 读取、订阅套餐/操作、**中心化 Agent（C-6，链下市场）发布/订阅**、A2A、信誉、配置、端点、**对话与并行任务管理**。
+**Actora MCP 客户端包** — 类型化访问 Actora Gateway 的 MCP 服务（52 个工具）：IdentityRegistry 读取、订阅套餐/操作、**中心化 Agent（C-6，链下市场）发布/订阅**、A2A、信誉、配置、端点、**对话与并行任务管理**。
 
 ```
 第三方服务 ── @actora/mcp ──► POST <GATEWAY>/mcp (MCP JSON-RPC 2.0)
@@ -34,7 +34,7 @@ const info = await mcp.initialize()
 console.log('server:', info)                // { name, version }
 
 const tools = await mcp.listTools()
-console.log('工具数:', tools.length)         // 51
+console.log('工具数:', tools.length)         // 52
 
 // 批量查询 Agent（等价 SDK getAllAgents）
 const { agents, total } = await mcp.listAgents({ fromId: 1, toId: total, activeOnly: true })
@@ -176,7 +176,7 @@ const mcp = new McpClient({
 
 ## 公开目录登记（服务端分发）
 
-服务端已托管在 `https://actora.codes/mcp`：MCP JSON-RPC 2.0，**51 个工具**，`initialize` / `tools/list` 无需鉴权。执行类工具的 JWT 支持两种来源（两者等价）：
+服务端已托管在 `https://actora.codes/mcp`：MCP JSON-RPC 2.0，**52 个工具**，`initialize` / `tools/list` 无需鉴权。执行类工具的 JWT 支持两种来源（两者等价）：
 
 - **`Authorization: Bearer <JWT>`**（推荐，目录/客户端只需配一个 header）
 - 工具参数 `access_token`（兼容旧调用方；显式传参优先）

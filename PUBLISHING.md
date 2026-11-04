@@ -63,7 +63,7 @@ curl -s "https://registry.modelcontextprotocol.io/v0/servers?search=actora" | he
 curl -s -X POST https://actora.codes/mcp -H 'Content-Type: application/json' \
   -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"probe","version":"0"}}}'
 
-# 工具数应为 51
+# 工具数应为 52
 curl -s -X POST https://actora.codes/mcp -H 'Content-Type: application/json' \
   -d '{"jsonrpc":"2.0","id":2,"method":"tools/list"}' \
   | python3 -c 'import sys,json;print(len(json.load(sys.stdin)["result"]["tools"]))'
