@@ -78,29 +78,37 @@ curl -s "https://registry.modelcontextprotocol.io/v0/servers?search=sftgroup" \
   | python3 -c 'import sys,json;print([s["server"]["name"] for s in json.load(sys.stdin)["servers"]])'
 ```
 
-**已发布（2026-11-04）**：`io.github.sftgroup/actora` / `actora-platform` / `actora-tenant` 均为 **0.2.0**，搜索 `sftgroup` 与 `actora` 均可检索到三条记录。
+**已发布（2026-11-05）**：`io.github.sftgroup/actora` / `actora-platform` / `actora-tenant` 均为 **0.2.1**（`status: active`，`repository.url` 指向 `actora-mcp`），搜索 `sftgroup` 与 `actora` 均可检索到三条记录。
 
 后续版本更新只需改清单里的 `version` 并重跑 `mcp-publisher publish <file>`（同版本号不可覆盖，必须升版本）。
 
-## 3. Smithery
+## 3. Smithery（被动，暂不投入）
 
-- 入口：`https://smithery.ai` 控制台 →「New server」→ 选择 **Remote / URL**
-- URL 填 `https://actora.codes/mcp/platform`（或 `/mcp/tenant`）
-- 传输选 Streamable HTTP；健康检查走 `initialize`，无需凭证即可通过
-- **鉴权限制**：Smithery 的配置表单把 `authorization` 保留给 OAuth，不能作为用户输入字段；本服务的 JWT 只认 `Authorization: Bearer`。因此：
-  - 匿名可用的只读工具（`actora_identity_*` 等）可正常通过 Smithery 使用
-  - 写工具/对话工具需把 JWT 作为工具参数 `access_token` 显式传入，或由客户端直连
-- 若控制台要求仓库部署（而非远程 URL），请使用公开仓 `sftgroup/actora-mcp`
+**2026-10-31 起 Smithery 关停了 MCP 代理 / CLI / API key 体系**，站点现由 Arcade 运营，仅作目录展示，新提交路径未公开。当前动作只有一项：
+
+- 打开 `https://smithery.ai` 搜 `actora`；若存在旧条目，认领并把 URL 改为 `https://actora.codes/mcp/platform`（旧的 `run.tools` 代理地址已失效）
+- 不存在则跳过，不占用时间
+
+历史备注：其配置表单把 `authorization` 保留给 OAuth，本服务的 `Authorization: Bearer <JWT>` 无法作为用户字段；匿名只读工具（`actora_identity_*`）可直连，写工具需客户端直连或把 JWT 作为工具参数 `access_token` 传入。
 
 ## 4. mcp.so / Glama / PulseMCP
 
-| 站点 | 提交方式 | 需要准备 |
+| 站点 | 现状（2026-11-05 实测） | 剩余动作 |
 |---|---|---|
-| mcp.so | 站点提交表单（填仓库 + 远程地址） | 站点账号；仓库公开后自动展示工具列表 |
-| Glama | 自动索引 GitHub 仓库，可认领 | 仓库公开（自动索引前提）；认领需 Glama 账号 |
-| PulseMCP | 站点提交表单 | 站点账号；填 §1 的 title/description/url |
+| Glama | ✅ **已自动收录 3 个 connector**：`io.github.sftgroup/actora` / `actora-platform` / `actora-tenant`，均为 `status: healthy`、`auth: none`、`capability: tools`（源自官方 Registry） | 只需**认领**：仓库根加 `glama.json`（`maintainers` 填 GitHub 用户名）→ Glama 页面点 Claim；认领后可改名称/描述、看用量报表 |
+| mcp.so | 表单开放：`Type / Name / URL / Server Config` 四项 | 登录后按 §1 提交；工具列表由目录侧调 `tools/list` 抓取 |
+| PulseMCP | **提交入口 2026-09-03 起暂停**，官方说明「先发 Registry，重开后自动收录」 | 不提交；我们已在 Registry，等其重开自动出现 |
 
-三处统一按 §1 字段填写；工具列表会由目录侧调用 `tools/list` 自动抓取（52 / 43 / 9）。
+Glama 认领用文件（放在 `actora-mcp` 仓库根，org 仓库必须用此方式）：
+
+```json
+{
+  "$schema": "https://glama.ai/mcp/schemas/server.json",
+  "maintainers": ["<github-username>"]
+}
+```
+
+> Glama 的 API key 属 **Gateway（模型代理）** 凭证，只能读目录数据（`GET /api/mcp/v1/servers`、`/api/mcp/v1/connectors`），**没有提交/认领权限**；认领必须走网页 GitHub 登录。
 
 ## 5. 提交后验收（三入口）
 
@@ -136,9 +144,9 @@ MCP Inspector（`npx @modelcontextprotocol/inspector`）连接上述任一 URL �
 | 目录 | 状态 | 阻塞项 |
 |---|---|---|
 | 官方 MCP Registry | ✅ **已发布 0.2.1（2026-11-05）**，三条均 `active`，`repository.url` 指向 `actora-mcp` | — |
-| Smithery | 材料就绪，**待提交** | 站点账号（远程 URL 型可先上只读工具） |
+| Glama | ✅ **已被自动收录 3 个 connector（healthy）**；待认领 | 认领需 `glama.json`（GitHub 用户名），API key 不行 |
 | mcp.so | 材料就绪，**待提交** | 站点账号 |
-| Glama | 材料就绪，**待索引/认领** | 仓库公开或 Glama 账号认领 |
-| PulseMCP | 材料就绪，**待提交** | 站点账号 |
+| Smithery | 被动：代理/CLI 已于 2026-10-31 关停 | 只查旧条目，不新提交 |
+| PulseMCP | 被动：提交入口 2026-09-03 起暂停 | 等其重开后从 Registry 自动收录 |
 
-> **仓库可见性**：`sftgroup/actora-mcp` 已公开，Glama / Smithery 可直接按其 GitHub 索引流程提交。
+> **仓库可见性**：`sftgroup/actora-mcp` 已公开。Glama 已从官方 Registry 自动收录（无需再提交）；Smithery 现仅作目录展示。
