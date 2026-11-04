@@ -264,3 +264,7 @@ mcp-publisher publish server.json   # 同版本号不可覆盖，升版本后重
 
 **兼容性**：服务端当前协商到 MCP `2024-11-05`（无 `Mcp-Session-Id`，无状态 POST）。新客户端请求 `2025-03-26` 时会回落到 `2024-11-05`，按规范可接受；若目录审核要求 Streamable HTTP 会话，需先补协议版本协商。
 
+## License
+
+Apache License 2.0 — see [LICENSE](LICENSE) and [NOTICE](NOTICE).
+The "Actora" name and logo are not licensed — see [TRADEMARK.md](TRADEMARK.md).
