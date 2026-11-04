@@ -17,7 +17,7 @@
 | 字段 | 值 |
 |---|---|
 | 传输 | Streamable HTTP（无状态 POST JSON-RPC 2.0，协商到 `2024-11-05`） |
-| 仓库 | `https://github.com/sftgroup/Agentx` |
+| 仓库 | `https://github.com/sftgroup/actora-mcp` |
 | 官网 | `https://actora.codes` |
 | 图标 | `https://actora.codes/icon-512.png` |
 | 鉴权 | 只读工具匿名；执行类工具需注册用户 JWT，支持 `Authorization: Bearer <JWT>` 或工具参数 `access_token` |
@@ -33,7 +33,7 @@
 title:       Actora — Agent Identity, Subscriptions & A2A
 description: ERC-8004 agent identity, on-chain subscriptions, reputation, A2A tasks and chat over 52 tools.
 url:         https://actora.codes/mcp
-repo:        https://github.com/sftgroup/Agentx
+repo:        https://github.com/sftgroup/actora-mcp
 ```
 
 **开发者 `io.github.sftgroup/actora-platform`**
@@ -42,7 +42,7 @@ repo:        https://github.com/sftgroup/Agentx
 title:       Actora Platform — Agent Publishing, Subscriptions & A2A
 description: Actora developer tools: ERC-8004 identity, subscriptions, listings, A2A, reputation.
 url:         https://actora.codes/mcp/platform
-repo:        https://github.com/sftgroup/Agentx
+repo:        https://github.com/sftgroup/actora-mcp
 ```
 
 **B 端 `io.github.sftgroup/actora-tenant`**
@@ -51,7 +51,7 @@ repo:        https://github.com/sftgroup/Agentx
 title:       Actora Tenant — Hosted Chat, Tasks & Usage
 description: Actora B-side tools: hosted chat, sessions, tasks, tenant plan and usage.
 url:         https://actora.codes/mcp/tenant
-repo:        https://github.com/sftgroup/Agentx
+repo:        https://github.com/sftgroup/actora-mcp
 ```
 
 ## 2. 官方 MCP Registry（首选）

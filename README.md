@@ -1,5 +1,7 @@
 # @actora/mcp
 
+[![CI](https://github.com/sftgroup/actora-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/sftgroup/actora-mcp/actions/workflows/ci.yml)
+
 **Actora MCP 客户端包** — 类型化访问 Actora Gateway 的 MCP 服务（52 个工具）：IdentityRegistry 读取、订阅套餐/操作、**中心化 Agent（C-6，链下市场）发布/订阅**、A2A、信誉、配置、端点、**对话与并行任务管理**。
 
 ```
@@ -225,7 +227,7 @@ const mcp = new McpClient({
 
 ## 完整服务端工具与协议
 
-见仓库 [MCP_SETUP.md](https://github.com/sftgroup/Agentx/blob/main/MCP_SETUP.md) 与 [docs/sdk-integration-example.md](https://github.com/sftgroup/Agentx/blob/main/docs/sdk-integration-example.md)。
+见 [MCP 接入文档](https://actora.codes/docs/mcp) 与 [SDK 集成示例](https://actora.codes/docs/sdk)。
 
 ## 公开目录登记（服务端分发）
 
@@ -257,7 +259,7 @@ mcp-publisher publish server.json   # 同版本号不可覆盖，升版本后重
 |---|---|
 | 远程地址 | `https://actora.codes/mcp` |
 | 传输 | Streamable HTTP |
-| 仓库 | `https://github.com/sftgroup/Agentx` |
+| 仓库 | `https://github.com/sftgroup/actora-mcp` |
 | 图标 | `https://actora.codes/icon-512.png` |
 
 **兼容性**：服务端当前协商到 MCP `2024-11-05`（无 `Mcp-Session-Id`，无状态 POST）。新客户端请求 `2025-03-26` 时会回落到 `2024-11-05`，按规范可接受；若目录审核要求 Streamable HTTP 会话，需先补协议版本协商。
