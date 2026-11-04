@@ -146,6 +146,7 @@ MCP Inspector（`npx @modelcontextprotocol/inspector`）连接上述任一 URL �
 | 官方 MCP Registry | ✅ **已发布 0.2.1（2026-11-05）**，三条均 `active`，`repository.url` 指向 `actora-mcp` | — |
 | Glama | ✅ **已收录 3 个 connector 并完成认领**（2026-11-05，`Ownership verified`） | — |
 | mcp.so | 材料就绪，**待提交** | 站点账号 |
+| awesome-remote-mcp-servers | ⏳ **PR [#3889](https://github.com/punkpeye/awesome-remote-mcp-servers/pull/3889) 已提**（2026-11-05，`check-submission` 通过，待合并） | — |
 | Smithery | 被动：代理/CLI 已于 2026-10-31 关停 | 只查旧条目，不新提交 |
 | PulseMCP | 被动：提交入口 2026-09-03 起暂停 | 等其重开后从 Registry 自动收录 |
 
