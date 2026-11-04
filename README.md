@@ -187,7 +187,7 @@ const mcp = new McpClient({
 
 > **注意**
 > - MCP **不接受** B 端 `api_key`（`actora_sk_…`，`X-Api-Key`）——那把钥匙只用于 REST `/api/v1`。MCP 的对话/任务工具只认注册用户 JWT。
-> - `Authorization: Bearer` 会被注入为工具参数 `access_token`；`actora_gateway_tenant` 的参数名是 `accessToken`，**不会**被自动注入，需显式传 `{"accessToken":"<JWT>"}`。
+> - `Authorization: Bearer` 会被注入为工具参数 `access_token`；`actora_gateway_tenant` 同时接受 `access_token`（推荐）与历史参数名 `accessToken`。
 > - 未带/无效 JWT 时，工具返回 `{"error":"HTTP 401","detail":"Invalid or expired token"}`，属预期行为。
 
 ## API 一览
@@ -212,7 +212,7 @@ const mcp = new McpClient({
 | `centralSubscriptionSubscribe({agentId,subscriber,period,txHash})` | `actora_central_subscription_subscribe` | 中心化订阅购买（x402，WRITE，需 `access_token`） |
 | `subscriptionDetail(id)` / `mySubscriptions(addr)` | `actora_subscription_detail/my_list` | 订阅详情/列表 |
 | `platformFee(chain?)` | `actora_subscription_fee` | 平台费率（bps） |
-| `gatewayHealth()` / `gatewayTenant()` | `actora_gateway_health/tenant` | Gateway 状态 |
+| `gatewayHealth()` / `gatewayTenant(accessToken?)` | `actora_gateway_health/tenant` | Gateway 状态 / 租户信息（JWT） |
 | 对话/任务（`callTool`） | `actora_gateway_chat` / `..._create_session` / `..._create_task` / `..._get_task` / `..._list_tasks` / `..._cancel_task` | 单轮对话与并行任务管理（需 `access_token` JWT 参数） |
 
 ## 关键约定

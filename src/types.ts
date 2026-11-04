@@ -1,5 +1,5 @@
 /** Chain selector accepted by every Actora MCP tool. */
-export type McpChain = 'sepolia' | 'bsc'
+export type McpChain = 'bsc' | 'ethereum' | 'base'
 
 /** A tool schema as returned by `tools/list`. */
 export interface McpToolSchema {
@@ -199,6 +199,17 @@ export interface CentralSubscriptionCheckResult {
   active: boolean
   subscriber: string
   agentId: number
+}
+
+/** Result of `actora_central_subscription_subscribe` — payment instruction or activated subscription. */
+export interface CentralSubscriptionResult {
+  paymentRequired?: boolean
+  active?: boolean
+  amountWei?: string
+  payTo?: string
+  network?: string
+  instructions?: string
+  [key: string]: unknown
 }
 
 // ── Generic ─────────────────────────────────────────────────────────────────

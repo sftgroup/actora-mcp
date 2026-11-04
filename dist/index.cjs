@@ -30,7 +30,7 @@ var McpClient = class _McpClient {
     this.requestId = 0;
     const base = config.gatewayUrl.replace(/\/+$/, "");
     this.url = `${base}/mcp`;
-    this.defaultChain = config.defaultChain ?? "sepolia";
+    this.defaultChain = config.defaultChain ?? "bsc";
     this.headers = { "Content-Type": "application/json", ...config.headers };
     this.timeoutMs = config.timeoutMs ?? 3e4;
   }
@@ -168,9 +168,13 @@ var McpClient = class _McpClient {
   gatewayHealth() {
     return this.callTool("actora_gateway_health", {});
   }
-  /** `actora_gateway_tenant` — current tenant info (needs `X-Api-Key` header). */
-  gatewayTenant() {
-    return this.callTool("actora_gateway_tenant", {});
+  /**
+   * `actora_gateway_tenant` — current tenant info. Requires a registered-user
+   * JWT: pass `accessToken` here, or configure `headers: { Authorization: 'Bearer <jwt>' }`
+   * (the gateway injects the Bearer token into the `access_token` argument).
+   */
+  gatewayTenant(accessToken) {
+    return this.callTool("actora_gateway_tenant", accessToken ? { access_token: accessToken } : {});
   }
   // ── Centralized agents (C-6, off-chain) ──────────────────────────────────
   /**
@@ -194,6 +198,34 @@ var McpClient = class _McpClient {
    */
   centralSubscriptionCheck(subscriber, agentId) {
     return this.callTool("actora_central_subscription_check", { subscriber, agentId });
+  }
+  /** `actora_central_agent_create` — publish a centralized agent (needs registered-user JWT). */
+  centralAgentCreate(args) {
+    const { accessToken, ...rest } = args;
+    return this.callTool("actora_central_agent_create", {
+      access_token: accessToken,
+      ...Object.fromEntries(Object.entries(rest).filter(([, v]) => v !== void 0))
+    });
+  }
+  /** `actora_central_agent_update` — update / list / delist a centralized agent you own. */
+  centralAgentUpdate(args) {
+    const { accessToken, ...rest } = args;
+    return this.callTool("actora_central_agent_update", {
+      access_token: accessToken,
+      ...Object.fromEntries(Object.entries(rest).filter(([, v]) => v !== void 0))
+    });
+  }
+  /**
+   * `actora_central_subscription_subscribe` — x402 purchase for a centralized
+   * agent. First call (no `txHash`) returns the payment instruction; call again
+   * with the on-chain `txHash` to activate.
+   */
+  centralSubscriptionSubscribe(args) {
+    const { accessToken, ...rest } = args;
+    return this.callTool("actora_central_subscription_subscribe", {
+      access_token: accessToken,
+      ...Object.fromEntries(Object.entries(rest).filter(([, v]) => v !== void 0))
+    });
   }
 };
 // Annotate the CommonJS export names for ESM import in node:

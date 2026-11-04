@@ -1,5 +1,6 @@
 import type {
-  AgentExistsResult, AgentMetadataResult, CentralAgentsResult, CentralSubscriptionCheckResult,
+  AgentExistsResult, AgentMetadataResult, CentralAgentResult, CentralAgentsResult,
+  CentralSubscriptionCheckResult, CentralSubscriptionResult,
   CheckSubscriptionResult, FeeResult, GatewayHealthResult, ListAgentsResult, McpChain,
   McpServerInfo, McpToolSchema, MySubscriptionsResult, OwnerAgentsResult, PlanResult,
   SubscriptionDetailResult, TenantResult, TotalAgentsResult, WriteOpResult,
@@ -8,9 +9,9 @@ import type {
 export interface McpClientConfig {
   /** Actora Gateway base URL, e.g. https://actora.codes */
   gatewayUrl: string
-  /** Chain used by default when a tool call omits `chain`. Aligns with the server default ('sepolia'). */
+  /** Chain used by default when a tool call omits `chain`. Aligns with the server default ('bsc'). */
   defaultChain?: McpChain
-  /** Extra headers (e.g. `X-Api-Key` for tenant-gated tools). */
+  /** Extra headers, e.g. `Authorization: Bearer <jwt>` for registered-user tools. */
   headers?: Record<string, string>
   /** Per-request timeout in ms (default 30_000). */
   timeoutMs?: number
@@ -55,7 +56,7 @@ export class McpClient {
   constructor(config: McpClientConfig) {
     const base = config.gatewayUrl.replace(/\/+$/, '')
     this.url = `${base}/mcp`
-    this.defaultChain = config.defaultChain ?? 'sepolia'
+    this.defaultChain = config.defaultChain ?? 'bsc'
     this.headers = { 'Content-Type': 'application/json', ...config.headers }
     this.timeoutMs = config.timeoutMs ?? 30_000
   }
@@ -236,9 +237,13 @@ export class McpClient {
     return this.callTool('actora_gateway_health', {})
   }
 
-  /** `actora_gateway_tenant` — current tenant info (needs `X-Api-Key` header). */
-  gatewayTenant(): Promise<TenantResult> {
-    return this.callTool('actora_gateway_tenant', {})
+  /**
+   * `actora_gateway_tenant` — current tenant info. Requires a registered-user
+   * JWT: pass `accessToken` here, or configure `headers: { Authorization: 'Bearer <jwt>' }`
+   * (the gateway injects the Bearer token into the `access_token` argument).
+   */
+  gatewayTenant(accessToken?: string): Promise<TenantResult> {
+    return this.callTool('actora_gateway_tenant', accessToken ? { access_token: accessToken } : {})
   }
 
   // ── Centralized agents (C-6, off-chain) ──────────────────────────────────
@@ -268,5 +273,61 @@ export class McpClient {
    */
   centralSubscriptionCheck(subscriber: string, agentId: number): Promise<CentralSubscriptionCheckResult> {
     return this.callTool('actora_central_subscription_check', { subscriber, agentId })
+  }
+
+  /** `actora_central_agent_create` — publish a centralized agent (needs registered-user JWT). */
+  centralAgentCreate(args: {
+    accessToken: string
+    name: string
+    description?: string
+    tags?: string[]
+    capabilities?: string[]
+    skills?: string[]
+    category?: string
+  }): Promise<CentralAgentResult> {
+    const { accessToken, ...rest } = args
+    return this.callTool('actora_central_agent_create', {
+      access_token: accessToken,
+      ...Object.fromEntries(Object.entries(rest).filter(([, v]) => v !== undefined)),
+    })
+  }
+
+  /** `actora_central_agent_update` — update / list / delist a centralized agent you own. */
+  centralAgentUpdate(args: {
+    accessToken: string
+    agentId: number
+    name?: string
+    description?: string
+    tags?: string[]
+    capabilities?: string[]
+    skills?: string[]
+    category?: string
+    isActive?: boolean
+  }): Promise<CentralAgentResult> {
+    const { accessToken, ...rest } = args
+    return this.callTool('actora_central_agent_update', {
+      access_token: accessToken,
+      ...Object.fromEntries(Object.entries(rest).filter(([, v]) => v !== undefined)),
+    })
+  }
+
+  /**
+   * `actora_central_subscription_subscribe` — x402 purchase for a centralized
+   * agent. First call (no `txHash`) returns the payment instruction; call again
+   * with the on-chain `txHash` to activate.
+   */
+  centralSubscriptionSubscribe(args: {
+    accessToken: string
+    agentId: number
+    subscriber: string
+    period?: 'day' | 'week' | 'month' | 'year'
+    priceWei?: string
+    txHash?: string
+  }): Promise<CentralSubscriptionResult> {
+    const { accessToken, ...rest } = args
+    return this.callTool('actora_central_subscription_subscribe', {
+      access_token: accessToken,
+      ...Object.fromEntries(Object.entries(rest).filter(([, v]) => v !== undefined)),
+    })
   }
 }

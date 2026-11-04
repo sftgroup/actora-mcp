@@ -1,5 +1,5 @@
 /** Chain selector accepted by every Actora MCP tool. */
-type McpChain = 'sepolia' | 'bsc';
+type McpChain = 'bsc' | 'ethereum' | 'base';
 /** A tool schema as returned by `tools/list`. */
 interface McpToolSchema {
     name: string;
@@ -178,6 +178,16 @@ interface CentralSubscriptionCheckResult {
     subscriber: string;
     agentId: number;
 }
+/** Result of `actora_central_subscription_subscribe` — payment instruction or activated subscription. */
+interface CentralSubscriptionResult {
+    paymentRequired?: boolean;
+    active?: boolean;
+    amountWei?: string;
+    payTo?: string;
+    network?: string;
+    instructions?: string;
+    [key: string]: unknown;
+}
 interface GatewayHealthResult {
     status: string;
     services?: Record<string, unknown>;
@@ -192,9 +202,9 @@ interface TenantResult {
 interface McpClientConfig {
     /** Actora Gateway base URL, e.g. https://actora.codes */
     gatewayUrl: string;
-    /** Chain used by default when a tool call omits `chain`. Aligns with the server default ('sepolia'). */
+    /** Chain used by default when a tool call omits `chain`. Aligns with the server default ('bsc'). */
     defaultChain?: McpChain;
-    /** Extra headers (e.g. `X-Api-Key` for tenant-gated tools). */
+    /** Extra headers, e.g. `Authorization: Bearer <jwt>` for registered-user tools. */
     headers?: Record<string, string>;
     /** Per-request timeout in ms (default 30_000). */
     timeoutMs?: number;
@@ -279,8 +289,12 @@ declare class McpClient {
     platformFee(chain?: McpChain): Promise<FeeResult>;
     /** `actora_gateway_health` — gateway health + indexer status. */
     gatewayHealth(): Promise<GatewayHealthResult>;
-    /** `actora_gateway_tenant` — current tenant info (needs `X-Api-Key` header). */
-    gatewayTenant(): Promise<TenantResult>;
+    /**
+     * `actora_gateway_tenant` — current tenant info. Requires a registered-user
+     * JWT: pass `accessToken` here, or configure `headers: { Authorization: 'Bearer <jwt>' }`
+     * (the gateway injects the Bearer token into the `access_token` argument).
+     */
+    gatewayTenant(accessToken?: string): Promise<TenantResult>;
     /**
      * `actora_central_agent_list` — centralized agents (source="central", negative
      * IDs, NOT on-chain NFTs) with their subscription plans (central_plans, same
@@ -299,6 +313,41 @@ declare class McpClient {
      * fiat/x402 records first (resolveAccess). Public read.
      */
     centralSubscriptionCheck(subscriber: string, agentId: number): Promise<CentralSubscriptionCheckResult>;
+    /** `actora_central_agent_create` — publish a centralized agent (needs registered-user JWT). */
+    centralAgentCreate(args: {
+        accessToken: string;
+        name: string;
+        description?: string;
+        tags?: string[];
+        capabilities?: string[];
+        skills?: string[];
+        category?: string;
+    }): Promise<CentralAgentResult>;
+    /** `actora_central_agent_update` — update / list / delist a centralized agent you own. */
+    centralAgentUpdate(args: {
+        accessToken: string;
+        agentId: number;
+        name?: string;
+        description?: string;
+        tags?: string[];
+        capabilities?: string[];
+        skills?: string[];
+        category?: string;
+        isActive?: boolean;
+    }): Promise<CentralAgentResult>;
+    /**
+     * `actora_central_subscription_subscribe` — x402 purchase for a centralized
+     * agent. First call (no `txHash`) returns the payment instruction; call again
+     * with the on-chain `txHash` to activate.
+     */
+    centralSubscriptionSubscribe(args: {
+        accessToken: string;
+        agentId: number;
+        subscriber: string;
+        period?: 'day' | 'week' | 'month' | 'year';
+        priceWei?: string;
+        txHash?: string;
+    }): Promise<CentralSubscriptionResult>;
 }
 
-export { type AgentExistsResult, type AgentMetadata, type AgentMetadataResult, type AgentSummary, type CentralAgentResult, type CentralAgentsResult, type CentralPlanResult, type CentralSubscriptionCheckResult, type CheckSubscriptionResult, type FeeResult, type GatewayHealthResult, type ListAgentsResult, type McpChain, McpClient, type McpClientConfig, type McpServerInfo, type McpToolSchema, type MySubscriptionsResult, type OwnerAgentsResult, type PlanResult, type SubscriptionDetailResult, type TenantResult, type TotalAgentsResult, type WriteOpResult };
+export { type AgentExistsResult, type AgentMetadata, type AgentMetadataResult, type AgentSummary, type CentralAgentResult, type CentralAgentsResult, type CentralPlanResult, type CentralSubscriptionCheckResult, type CentralSubscriptionResult, type CheckSubscriptionResult, type FeeResult, type GatewayHealthResult, type ListAgentsResult, type McpChain, McpClient, type McpClientConfig, type McpServerInfo, type McpToolSchema, type MySubscriptionsResult, type OwnerAgentsResult, type PlanResult, type SubscriptionDetailResult, type TenantResult, type TotalAgentsResult, type WriteOpResult };
