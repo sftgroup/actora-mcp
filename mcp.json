@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "platform": {
+      "url": "https://actora.codes/mcp/platform",
+      "headers": {
+        "Authorization": "Bearer ${ACTORA_TOKEN}"
+      }
+    }
+  }
+}

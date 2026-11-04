@@ -1,0 +1,33 @@
+{
+  "name": "actora",
+  "version": "0.2.1",
+  "description": "Agent identity, subscriptions, reputation, and A2A tasks over MCP. ERC-8004 identities on BNB Smart Chain, Base, and Ethereum — 43 tools, anonymous read-only by default.",
+  "author": {
+    "name": "sftgroup"
+  },
+  "homepage": "https://actora.codes",
+  "repository": "https://github.com/sftgroup/actora-mcp",
+  "license": "Apache-2.0",
+  "keywords": [
+    "mcp",
+    "ai-agents",
+    "agent-identity",
+    "erc-8004",
+    "a2a",
+    "web3",
+    "bsc",
+    "base",
+    "subscriptions"
+  ],
+  "logo": "assets/logo.png",
+  "variables": {
+    "type": "object",
+    "properties": {
+      "ACTORA_TOKEN": {
+        "type": "string",
+        "title": "Actora account token (JWT)",
+        "description": "Optional. Leave empty to use the anonymous read-only tools. Required for tools that write on-chain or call the hosted chat and task APIs."
+      }
+    }
+  }
+}

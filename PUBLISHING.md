@@ -95,8 +95,9 @@ curl -s "https://registry.modelcontextprotocol.io/v0/servers?search=sftgroup" \
 
 | 站点 | 现状（2026-11-05 实测） | 剩余动作 |
 |---|---|---|
-| Glama | ✅ **已自动收录 3 个 connector**：`io.github.sftgroup/actora` / `actora-platform` / `actora-tenant`，均为 `status: healthy`、`auth: none`、`capability: tools`（源自官方 Registry） | 只需**认领**：仓库根加 `glama.json`（`maintainers` 填 GitHub 用户名）→ Glama 页面点 Claim；认领后可改名称/描述、看用量报表 |
-| mcp.so | 表单开放：`Type / Name / URL / Server Config` 四项 | 登录后按 §1 提交；工具列表由目录侧调 `tools/list` 抓取 |
+| Glama | ✅ **已自动收录 3 个 connector 并完成认领**：`io.github.sftgroup/actora` / `actora-platform` / `actora-tenant`，`status: healthy`；2026-11-05 已在后台补齐分类 / operator / website / vendor relationship / documentation / restrictions / thumbnail | — |
+| mcp.so | ✅ 已提交（2026-11-05，免费通道 `https://mcp.so/submit?type=server`） | 等目录侧抓取 `tools/list` 生效 |
+| MCP Market | ✅ 已提交（2026-11-05，免费队列） | 排队审核 |
 | PulseMCP | **提交入口 2026-09-03 起暂停**，官方说明「先发 Registry，重开后自动收录」 | 不提交；我们已在 Registry，等其重开自动出现 |
 
 Glama 认领用文件（放在 `actora-mcp` 仓库根，org 仓库必须用此方式）：
@@ -144,10 +145,50 @@ MCP Inspector（`npx @modelcontextprotocol/inspector`）连接上述任一 URL �
 | 目录 | 状态 | 阻塞项 |
 |---|---|---|
 | 官方 MCP Registry | ✅ **已发布 0.2.1（2026-11-05）**，三条均 `active`，`repository.url` 指向 `actora-mcp` | — |
-| Glama | ✅ **已收录 3 个 connector 并完成认领**（2026-11-05，`Ownership verified`） | — |
-| mcp.so | 材料就绪，**待提交** | 站点账号 |
+| Glama | ✅ **已收录 3 个 connector 并完成认领 + 元数据补全**（2026-11-05） | — |
+| mcp.so | ✅ **已提交**（2026-11-05，免费通道） | 等目录侧抓取生效 |
+| MCP Market | ✅ **已提交**（2026-11-05，免费队列） | 排队审核 |
 | awesome-remote-mcp-servers | ⏳ **PR [#3889](https://github.com/punkpeye/awesome-remote-mcp-servers/pull/3889) 已提**（2026-11-05，`check-submission` 通过，待合并） | — |
+| Cursor Marketplace | ⏳ 未提交：需**已登录的 Cursor 账号**在 `cursor.com/marketplace/publish` 申请 publisher，仓库需带 `.cursor-plugin/plugin.json` + `mcp.json`（远程 URL + `${TOKEN}` 变量），人工审核 | Cursor 账号 + plugin 包 |
+| Cline MCP Marketplace | ⏳ 未提交：向 `cline/mcp-marketplace` 提 issue（仓库 URL + 400×400 PNG + 理由），审核会看社区采用度，并对**加密货币类工具加验** | 一个 GitHub issue |
+| Claude Connectors Directory | ⏸ 暂不具备条件：需 OAuth 2.0（现有鉴权是 Bearer JWT）、每个工具带 `title` + `readOnlyHint`/`destructiveHint`、隐私政策页、审核测试账号；提交入口 `claude.ai/directory/manage` | 见 §7.3 前置改造 |
 | Smithery | 被动：代理/CLI 已于 2026-10-31 关停 | 只查旧条目，不新提交 |
 | PulseMCP | 被动：提交入口 2026-09-03 起暂停 | 等其重开后从 Registry 自动收录 |
 
 > **仓库可见性**：`sftgroup/actora-mcp` 已公开。Glama 已从官方 Registry 自动收录（无需再提交）；Smithery 现仅作目录展示。
+
+## 7. 客户端市场（Cursor / Cline / Claude）
+
+### 7.1 Cursor Marketplace（可做，成本低）
+
+- **提交流程**：登录 Cursor → `https://cursor.com/marketplace/publish` 申请 publisher → 填仓库 URL → 人工审核（每次更新也要审）。
+- **物料**：仓库根 `.cursor-plugin/plugin.json`（`name` 必填，kebab-case；`logo` / `keywords` / `repository` 建议填）+ `mcp.json`，远程服务写法：
+
+```json
+{ "mcpServers": { "actora": {
+  "url": "https://actora.codes/mcp/platform",
+  "headers": { "Authorization": "Bearer ${ACTORA_TOKEN}" }
+} } }
+```
+
+- **鉴权**：插件 `variables` 声明 `ACTORA_TOKEN`（JSON Schema），用户在 Cursor 的 Plugins → Configure 填值，密钥不入库。只读工具可匿名，变量可留空。
+- **注意**：Cursor 的插件以 Git 仓库分发，必须公开；我们可复用 `sftgroup/actora-mcp` 或单独建 `actora-cursor-plugin`。
+
+### 7.2 Cline MCP Marketplace（可做，成本最低）
+
+- **提交流程**：在 `github.com/cline/mcp-marketplace` 开 issue（模板 `mcp-server-submission.yml`），三项：仓库 URL、**400×400 PNG logo**、入选理由。
+- **安装方式**：Cline 读 `README.md`（可选 `llms-install.md`）自主安装 → 需在 README 增加「添加到 Cline」的远程配置片段。
+- **风险**：审核明确会看社区采用度与维护者可信度，且对**加密货币/金融类工具额外加验**，不保证通过。
+
+### 7.3 Claude Connectors Directory（有硬前置）
+
+官方提交页 `claude.ai/directory/manage`，要求（2026-11 现行）：
+
+1. 远程 HTTPS 服务（✅ 已有）；
+2. **有鉴权就必须是 OAuth 2.0**，或完全匿名 —— 当前 Bearer JWT / `access_token` 参数不满足；
+3. **每个工具都要有 `title` 与 `readOnlyHint`/`destructiveHint` 注解** —— 当前 43/52 个工具均未声明；
+4. 必填隐私政策 URL（`actora.codes/privacy` 目前 404）、文档 URL、支持联系方式、图标；
+5. 供审核用的测试账号与三个可用 prompt 示例；
+6. 提交账号需付费 Claude 计划。
+
+**结论**：Cursor / Cline 是「填表 + 打一个插件包」；Claude 需要先做 OAuth + 工具注解 + 隐私政策页三项工程改造，建议与 T8 的真实扣费一起排期。
