@@ -61,6 +61,30 @@ curl -s -X POST https://actora.codes/mcp/tenant -H 'Content-Type: application/js
 claude mcp add --transport http actora https://actora.codes/mcp/platform
 ```
 
+## Add to Cursor / Cline
+
+仓库根已带 Cursor 插件清单：`.cursor-plugin/plugin.json`（含 `variables` 声明）+ `mcp.json`，装好后 MCP 服务名显示为 `plugin-actora-platform`。
+
+| 客户端 | 安装 | 鉴权 |
+|---|---|---|
+| Cursor | Marketplace 搜索 `Actora`（审核中）；现在也可在 Cursor Settings → MCP 手动添加 `https://actora.codes/mcp/platform` | 插件变量 `ACTORA_TOKEN`，在 Plugins → Configure 中填写 |
+| Cline | 见 [llms-install.md](./llms-install.md)：面板 → MCP Servers → Remote Servers → URL 填 `https://actora.codes/mcp/platform`，Transport 选 **Streamable HTTP** | 无需凭证；写工具再加 `Authorization` header |
+
+`mcp.json` 里只有占位符，不含任何密钥：
+
+```json
+{
+  "mcpServers": {
+    "platform": {
+      "url": "https://actora.codes/mcp/platform",
+      "headers": { "Authorization": "Bearer ${ACTORA_TOKEN}" }
+    }
+  }
+}
+```
+
+`ACTORA_TOKEN` 不是必填项：留空即可匿名使用全部只读工具，只有需要账号的写工具会返回 `access_token ... required`。
+
 ## 安装
 
 ```bash
