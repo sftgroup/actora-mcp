@@ -229,7 +229,8 @@ const mcp = new McpClient({
 | `getPlan(planId, chain?)` | `actora_subscription_plans` | 套餐详情 |
 | `createPlan({agentId,price,period,...})` | `actora_subscription_create_plan` | 创建套餐（WRITE） |
 | `subscribe(planId, {valueWei})` | `actora_subscription_subscribe` | 订阅（WRITE） |
-| `cancelSubscription(id)` / `releaseFunds(id)` | `actora_subscription_cancel/release` | 取消/释放（WRITE） |
+| `cancelSubscription(id)` | `actora_subscription_cancel` | 取消订阅（WRITE，即时生效、无退款） |
+| ~~`releaseFunds(id)`~~ | `actora_subscription_release` | 已废弃：v3 无 escrow，调用返回不支持错误 |
 | `checkSubscription(sub, agentId)` | `actora_subscription_check` | 订阅有效性（链上） |
 | `centralAgents({activeOnly,category,capabilities,page,pageSize})` | `actora_central_agent_list` | 中心化 Agent 列表 + 计划（链下，C-6） |
 | `centralSubscriptionCheck(sub, agentId)` | `actora_central_subscription_check` | 中心化 Agent 订阅有效性（resolveAccess 链下优先） |
