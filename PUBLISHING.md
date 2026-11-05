@@ -149,9 +149,9 @@ MCP Inspector（`npx @modelcontextprotocol/inspector`）连接上述任一 URL �
 | mcp.so | ✅ **已提交**（2026-11-05，免费通道） | 等目录侧抓取生效 |
 | MCP Market | ✅ **已提交**（2026-11-05，免费队列） | 排队审核 |
 | awesome-remote-mcp-servers | ⏳ **PR [#3889](https://github.com/punkpeye/awesome-remote-mcp-servers/pull/3889) 已提**（2026-11-05，`check-submission` 通过，待合并） | — |
-| Cursor Marketplace | ⏳ 未提交：需**已登录的 Cursor 账号**在 `cursor.com/marketplace/publish` 申请 publisher，仓库需带 `.cursor-plugin/plugin.json` + `mcp.json`（远程 URL + `${TOKEN}` 变量），人工审核 | Cursor 账号 + plugin 包 |
-| Cline MCP Marketplace | ⏳ 未提交：向 `cline/mcp-marketplace` 提 issue（仓库 URL + 400×400 PNG + 理由），审核会看社区采用度，并对**加密货币类工具加验** | 一个 GitHub issue |
-| Claude Connectors Directory | ⏸ 暂不具备条件：需 OAuth 2.0（现有鉴权是 Bearer JWT）、每个工具带 `title` + `readOnlyHint`/`destructiveHint`、隐私政策页、审核测试账号；提交入口 `claude.ai/directory/manage` | 见 §7.3 前置改造 |
+| Cursor Marketplace | ⏳ **物料已就绪**（2026-11-05）：插件包已推送到 `actora-mcp`（`.cursor-plugin/plugin.json` / `mcp.json` / `assets/logo.png`）；待登录 `cursor.com/marketplace/publish` 申请 publisher 并填仓库 URL，人工审核 | Cursor 账号 |
+| Cline MCP Marketplace | ⏳ **物料已就绪**（2026-11-05）：`llms-install.md` + `assets/logo-400.png` 已推送；待 Cline 内实测安装后向 `cline/mcp-marketplace` 提 issue（审核会看社区采用度，并对**加密货币类工具加验**） | Cline 实测 + 一个 GitHub issue |
+| Claude Connectors Directory | ⏸ 部分就绪：工具 `title` + `readOnlyHint`/`destructiveHint`（52 条）与 `/privacy`、`/terms` 已进仓库待部署；唯一硬前置是鉴权模式 —— 有鉴权必须 OAuth 2.0，或改用全匿名只读端点 | 鉴权模式决策 + 部署 |
 | Smithery | 被动：代理/CLI 已于 2026-10-31 关停 | 只查旧条目，不新提交 |
 | PulseMCP | 被动：提交入口 2026-09-03 起暂停 | 等其重开后从 Registry 自动收录 |
 
@@ -186,9 +186,9 @@ MCP Inspector（`npx @modelcontextprotocol/inspector`）连接上述任一 URL �
 
 1. 远程 HTTPS 服务（✅ 已有）；
 2. **有鉴权就必须是 OAuth 2.0**，或完全匿名 —— 当前 Bearer JWT / `access_token` 参数不满足；
-3. **每个工具都要有 `title` 与 `readOnlyHint`/`destructiveHint` 注解** —— 当前 43/52 个工具均未声明；
-4. 必填隐私政策 URL（`actora.codes/privacy` 目前 404）、文档 URL、支持联系方式、图标；
+3. **每个工具都要有 `title` 与 `readOnlyHint`/`destructiveHint` 注解** —— ✅ 已完成（2026-11-05，52 条：32 只读 / 20 写入，其中 11 条 destructive；集中表 `TOOL_HINTS` + `mcp-directory.test.ts` 守护）；
+4. 必填隐私政策 URL —— ✅ `/privacy` 与 `/terms` 已进仓库（含 `support@actora.codes` 联系方式），部署后生效；文档 URL、图标也已就绪；
 5. 供审核用的测试账号与三个可用 prompt 示例；
 6. 提交账号需付费 Claude 计划。
 
-**结论**：Cursor / Cline 是「填表 + 打一个插件包」；Claude 需要先做 OAuth + 工具注解 + 隐私政策页三项工程改造，建议与 T8 的真实扣费一起排期。
+**结论**：Cursor / Cline 只剩站点侧动作；Claude 的工程前置已完成两项（工具注解、隐私页），唯一缺口是鉴权模式 —— 维持 Bearer JWT 就必须补 OAuth 2.0，否则改为全匿名只读端点后即可提交。
