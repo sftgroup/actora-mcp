@@ -49,7 +49,7 @@ var McpClient = class _McpClient {
     const result = await this.rpc("initialize", {
       protocolVersion: "2024-11-05",
       capabilities: {},
-      clientInfo: { name: "@actora/mcp", version: "0.2.1" }
+      clientInfo: { name: "@actora/mcp", version: "0.2.2" }
     });
     this.serverInfo = result.serverInfo ?? {};
     return this.serverInfo;
@@ -199,6 +199,25 @@ var McpClient = class _McpClient {
     return this.callTool("actora_central_subscription_subscribe", {
       access_token: accessToken,
       ...Object.fromEntries(Object.entries(rest).filter(([, v]) => v !== void 0))
+    });
+  }
+  // ── Unified agent call (free / subscription / x402 per-call) ─────────────
+  /**
+   * `actora_agent_call` — call a published agent.
+   *
+   * Free agents work anonymously; subscribed callers need no per-call payment.
+   * Paid agents return `error: 'payment_required'` with `payTo` / `token` /
+   * `amount`; transfer the USDC directly to the publisher, then retry with
+   * `paymentTx` and the same `refId` (one transaction per call).
+   */
+  agentCall(agentId, input, opts = {}) {
+    return this.callTool("actora_agent_call", {
+      chain: opts.chain ?? this.defaultChain,
+      agentId,
+      input,
+      ...opts.refId ? { refId: opts.refId } : {},
+      ...opts.paymentTx ? { payment_tx: opts.paymentTx } : {},
+      ...opts.accessToken ? { access_token: opts.accessToken } : {}
     });
   }
 };

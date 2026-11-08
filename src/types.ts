@@ -225,3 +225,16 @@ export interface TenantResult {
   tenant: string
   [key: string]: unknown
 }
+
+/** Result of `actora_agent_call` — a reply, or a 402 payment instruction. */
+export interface AgentCallResult {
+  reply?: string
+  error?: string
+  /** Present when `error === 'payment_required'` (x402 direct payment). */
+  payTo?: string
+  token?: string
+  amount?: string
+  chain?: string
+  refId?: string
+  [key: string]: unknown
+}

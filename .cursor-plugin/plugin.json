@@ -1,7 +1,7 @@
 {
   "name": "actora",
-  "version": "0.2.1",
-  "description": "Agent identity, subscriptions, reputation, and A2A tasks over MCP. ERC-8004 identities on BNB Smart Chain, Base, and Ethereum — 43 tools, anonymous read-only by default.",
+  "version": "0.2.2",
+  "description": "Agent identity, subscriptions, reputation, and A2A tasks over MCP. ERC-8004 identities on BNB Smart Chain, Base, and Ethereum — 44 tools, anonymous read-only by default.",
   "author": {
     "name": "sftgroup"
   },

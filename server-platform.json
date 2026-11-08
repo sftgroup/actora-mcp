@@ -3,7 +3,7 @@
   "name": "io.github.sftgroup/actora-platform",
   "title": "Actora Platform — Agent Publishing, Subscriptions & A2A",
   "description": "Actora developer tools: ERC-8004 identity, subscriptions, listings, A2A, reputation.",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "websiteUrl": "https://actora.codes",
   "repository": {
     "url": "https://github.com/sftgroup/actora-mcp",

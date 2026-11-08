@@ -58,7 +58,7 @@ describe('McpClient protocol', () => {
     expect(info.name).toBe('actora-tenant')
   })
 
-  it('initialize sends protocolVersion + clientInfo 0.2.1 and caches the handshake', async () => {
+  it('initialize sends protocolVersion + clientInfo 0.2.2 and caches the handshake', async () => {
     const fetchMock = mockInitThen({ totalAgents: 22 })
 
     const client = new McpClient({ gatewayUrl: 'https://actora.codes' })
@@ -68,7 +68,7 @@ describe('McpClient protocol', () => {
     const first = bodyOf(fetchMock, 0)
     expect(first.method).toBe('initialize')
     expect(first.params.protocolVersion).toBe('2024-11-05')
-    expect(first.params.clientInfo).toEqual({ name: '@actora/mcp', version: '0.2.1' })
+    expect(first.params.clientInfo).toEqual({ name: '@actora/mcp', version: '0.2.2' })
 
     // 三次请求：initialize + tools/call + tools/call（initialize 已缓存）
     expect(fetchMock).toHaveBeenCalledTimes(3)
@@ -198,6 +198,32 @@ describe('McpClient tool argument mapping', () => {
       agentId: -7,
       subscriber: '0xabc',
       period: 'month',
+    })
+  })
+
+  it('agentCall posts actora_agent_call and maps optional payment fields', async () => {
+    const fetchMock = mockInitThen({ reply: 'hi' })
+    const client = new McpClient({ gatewayUrl: 'https://actora.codes' })
+
+    expect(await client.agentCall(7, 'hello')).toEqual({ reply: 'hi' })
+    expect(bodyOf(fetchMock, 1).params.name).toBe('actora_agent_call')
+    expect(bodyOf(fetchMock, 1).params.arguments).toEqual({ chain: 'bsc', agentId: 7, input: 'hello' })
+
+    const fetchMock2 = mockInitThen({ error: 'payment_required', payTo: '0xpay', amount: '1000' })
+    const res = await new McpClient({ gatewayUrl: 'https://actora.codes', defaultChain: 'base' }).agentCall(
+      7,
+      'hello',
+      { refId: 'ref-1', paymentTx: '0xtx', accessToken: 'jwt-3' },
+    )
+    expect(res.error).toBe('payment_required')
+    expect(res.payTo).toBe('0xpay')
+    expect(bodyOf(fetchMock2, 1).params.arguments).toEqual({
+      chain: 'base',
+      agentId: 7,
+      input: 'hello',
+      refId: 'ref-1',
+      payment_tx: '0xtx',
+      access_token: 'jwt-3',
     })
   })
 })

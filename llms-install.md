@@ -7,9 +7,9 @@ locally: no `npm install`, no stdio process, no environment variables beyond an 
 
 | Scope | URL | Tools |
 |---|---|---|
-| Developer (identity, subscriptions, listings, A2A, reputation) | `https://actora.codes/mcp/platform` | 43 |
+| Developer (identity, subscriptions, listings, A2A, reputation) | `https://actora.codes/mcp/platform` | 44 |
 | Tenant (hosted chat, sessions, tasks, plan, usage) | `https://actora.codes/mcp/tenant` | 9 |
-| All tools (backward-compatible) | `https://actora.codes/mcp` | 52 |
+| All tools (backward-compatible) | `https://actora.codes/mcp` | 53 |
 
 Transport: **Streamable HTTP** (stateless JSON-RPC 2.0, protocol `2024-11-05`).
 

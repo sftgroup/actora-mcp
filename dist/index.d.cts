@@ -198,6 +198,18 @@ interface TenantResult {
     tenant: string;
     [key: string]: unknown;
 }
+/** Result of `actora_agent_call` — a reply, or a 402 payment instruction. */
+interface AgentCallResult {
+    reply?: string;
+    error?: string;
+    /** Present when `error === 'payment_required'` (x402 direct payment). */
+    payTo?: string;
+    token?: string;
+    amount?: string;
+    chain?: string;
+    refId?: string;
+    [key: string]: unknown;
+}
 
 interface McpClientConfig {
     /** Actora Gateway base URL, e.g. https://actora.codes */
@@ -348,6 +360,20 @@ declare class McpClient {
         priceWei?: string;
         txHash?: string;
     }): Promise<CentralSubscriptionResult>;
+    /**
+     * `actora_agent_call` — call a published agent.
+     *
+     * Free agents work anonymously; subscribed callers need no per-call payment.
+     * Paid agents return `error: 'payment_required'` with `payTo` / `token` /
+     * `amount`; transfer the USDC directly to the publisher, then retry with
+     * `paymentTx` and the same `refId` (one transaction per call).
+     */
+    agentCall(agentId: number, input: string, opts?: {
+        refId?: string;
+        paymentTx?: string;
+        chain?: McpChain;
+        accessToken?: string;
+    }): Promise<AgentCallResult>;
 }
 
-export { type AgentExistsResult, type AgentMetadata, type AgentMetadataResult, type AgentSummary, type CentralAgentResult, type CentralAgentsResult, type CentralPlanResult, type CentralSubscriptionCheckResult, type CentralSubscriptionResult, type CheckSubscriptionResult, type FeeResult, type GatewayHealthResult, type ListAgentsResult, type McpChain, McpClient, type McpClientConfig, type McpServerInfo, type McpToolSchema, type MySubscriptionsResult, type OwnerAgentsResult, type PlanResult, type SubscriptionDetailResult, type TenantResult, type TotalAgentsResult, type WriteOpResult };
+export { type AgentCallResult, type AgentExistsResult, type AgentMetadata, type AgentMetadataResult, type AgentSummary, type CentralAgentResult, type CentralAgentsResult, type CentralPlanResult, type CentralSubscriptionCheckResult, type CentralSubscriptionResult, type CheckSubscriptionResult, type FeeResult, type GatewayHealthResult, type ListAgentsResult, type McpChain, McpClient, type McpClientConfig, type McpServerInfo, type McpToolSchema, type MySubscriptionsResult, type OwnerAgentsResult, type PlanResult, type SubscriptionDetailResult, type TenantResult, type TotalAgentsResult, type WriteOpResult };

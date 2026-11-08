@@ -1,7 +1,7 @@
 {
   "name": "@actora/mcp",
-  "version": "0.2.1",
-  "description": "Actora MCP client — typed access to the Actora Gateway MCP server (52 tools): IdentityRegistry reads, subscription plans/actions, centralized agents (C-6, off-chain), A2A, reputation, config, endpoints, dialogue & parallel task management.",
+  "version": "0.2.2",
+  "description": "Actora MCP client — typed access to the Actora Gateway MCP server (53 tools): IdentityRegistry reads, subscription plans/actions, centralized agents (C-6, off-chain), A2A, reputation, config, endpoints, dialogue & parallel task management.",
   "keywords": ["actora", "mcp", "ai-agent", "blockchain", "web3", "identity-registry"],
   "license": "Apache-2.0",
   "type": "module",

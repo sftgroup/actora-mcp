@@ -8,8 +8,8 @@
 
 | 服务 | 清单 | 远程地址 | 工具数 |
 |---|---|---|---|
-| 全量（兼容旧调用方） | `server.json` | `https://actora.codes/mcp` | 52 |
-| 开发者（Agent 开发/上架/订阅/A2A/信誉） | `server-platform.json` | `https://actora.codes/mcp/platform` | 43 |
+| 全量（兼容旧调用方） | `server.json` | `https://actora.codes/mcp` | 53 |
+| 开发者（Agent 开发/上架/订阅/A2A/信誉） | `server-platform.json` | `https://actora.codes/mcp/platform` | 44 |
 | B 端（托管对话/会话/任务/套餐/用量） | `server-tenant.json` | `https://actora.codes/mcp/tenant` | 9 |
 
 公共字段：
@@ -31,7 +31,7 @@
 
 ```
 title:       Actora — Agent Identity, Subscriptions & A2A
-description: ERC-8004 agent identity, on-chain subscriptions, reputation, A2A tasks and chat over 52 tools.
+description: ERC-8004 agent identity, on-chain subscriptions, reputation, A2A tasks and chat over 53 tools.
 url:         https://actora.codes/mcp
 repo:        https://github.com/sftgroup/actora-mcp
 ```
@@ -78,7 +78,7 @@ curl -s "https://registry.modelcontextprotocol.io/v0/servers?search=sftgroup" \
   | python3 -c 'import sys,json;print([s["server"]["name"] for s in json.load(sys.stdin)["servers"]])'
 ```
 
-**已发布（2026-11-05）**：`io.github.sftgroup/actora` / `actora-platform` / `actora-tenant` 均为 **0.2.1**（`status: active`，`repository.url` 指向 `actora-mcp`），搜索 `sftgroup` 与 `actora` 均可检索到三条记录。
+**已发布（2026-11-08 重发）**：`io.github.sftgroup/actora` / `actora-platform` / `actora-tenant` 均为 **0.2.2**（`status: active`，`repository.url` 指向 `actora-mcp`），搜索 `sftgroup` 与 `actora` 均可检索到三条记录。
 
 后续版本更新只需改清单里的 `version` 并重跑 `mcp-publisher publish <file>`（同版本号不可覆盖，必须升版本）。
 
@@ -121,7 +121,7 @@ for p in "" "/platform" "/tenant"; do
   echo
 done
 
-# 工具数：52 / 43 / 9
+# 工具数：53 / 44 / 9
 for p in "" "/platform" "/tenant"; do
   curl -s -X POST "https://actora.codes/mcp$p" -H 'Content-Type: application/json' \
     -d '{"jsonrpc":"2.0","id":2,"method":"tools/list"}' \
@@ -144,14 +144,14 @@ MCP Inspector（`npx @modelcontextprotocol/inspector`）连接上述任一 URL �
 
 | 目录 | 状态 | 阻塞项 |
 |---|---|---|
-| 官方 MCP Registry | ✅ **已发布 0.2.1（2026-11-05）**，三条均 `active`，`repository.url` 指向 `actora-mcp` | — |
+| 官方 MCP Registry | ✅ **已发布 0.2.2（2026-11-08 重发）**，三条均 `active`，`repository.url` 指向 `actora-mcp` | — |
 | Glama | ✅ **已收录 3 个 connector 并完成认领 + 元数据补全**（2026-11-05） | — |
 | mcp.so | ✅ **已提交**（2026-11-05，免费通道） | 等目录侧抓取生效 |
 | MCP Market | ✅ **已提交**（2026-11-05，免费队列） | 排队审核 |
 | awesome-remote-mcp-servers | ⏳ **PR [#3889](https://github.com/punkpeye/awesome-remote-mcp-servers/pull/3889) 已提**（2026-11-05，`check-submission` 通过，待合并） | — |
 | Cursor Marketplace | ⏳ **物料已就绪**（2026-11-05）：插件包已推送到 `actora-mcp`（`.cursor-plugin/plugin.json` / `mcp.json` / `assets/logo.png`）；待登录 `cursor.com/marketplace/publish` 申请 publisher 并填仓库 URL，人工审核 | Cursor 账号 |
 | Cline MCP Marketplace | ⏳ **物料已就绪**（2026-11-05）：`llms-install.md` + `assets/logo-400.png` 已推送；待 Cline 内实测安装后向 `cline/mcp-marketplace` 提 issue（审核会看社区采用度，并对**加密货币类工具加验**） | Cline 实测 + 一个 GitHub issue |
-| Claude Connectors Directory | ⏸ 部分就绪：工具 `title` + `readOnlyHint`/`destructiveHint`（52 条）与 `/privacy`、`/terms` 已进仓库待部署；唯一硬前置是鉴权模式 —— 有鉴权必须 OAuth 2.0，或改用全匿名只读端点 | 鉴权模式决策 + 部署 |
+| Claude Connectors Directory | ⏸ 部分就绪：工具 `title` + `readOnlyHint`/`destructiveHint`（53 条）与 `/privacy`、`/terms` 已进仓库待部署；唯一硬前置是鉴权模式 —— 有鉴权必须 OAuth 2.0，或改用全匿名只读端点 | 鉴权模式决策 + 部署 |
 | Smithery | 被动：代理/CLI 已于 2026-10-31 关停 | 只查旧条目，不新提交 |
 | PulseMCP | 被动：提交入口 2026-09-03 起暂停 | 等其重开后从 Registry 自动收录 |
 
@@ -186,7 +186,7 @@ MCP Inspector（`npx @modelcontextprotocol/inspector`）连接上述任一 URL �
 
 1. 远程 HTTPS 服务（✅ 已有）；
 2. **有鉴权就必须是 OAuth 2.0**，或完全匿名 —— 当前 Bearer JWT / `access_token` 参数不满足；
-3. **每个工具都要有 `title` 与 `readOnlyHint`/`destructiveHint` 注解** —— ✅ 已完成（2026-11-05，52 条：32 只读 / 20 写入，其中 11 条 destructive；集中表 `TOOL_HINTS` + `mcp-directory.test.ts` 守护）；
+3. **每个工具都要有 `title` 与 `readOnlyHint`/`destructiveHint` 注解** —— ✅ 已完成（2026-11-08，53 条：32 只读 / 21 写入，其中 10 条 destructive；集中表 `TOOL_HINTS` + `mcp-directory.test.ts` 守护）；
 4. 必填隐私政策 URL —— ✅ `/privacy` 与 `/terms` 已进仓库（含 `support@actora.codes` 联系方式），部署后生效；文档 URL、图标也已就绪；
 5. 供审核用的测试账号与三个可用 prompt 示例；
 6. 提交账号需付费 Claude 计划。
